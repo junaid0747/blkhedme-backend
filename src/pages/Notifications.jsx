@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { pushNotification, fetchAllUsers } from '../features/notificationSlice';
 import gallery from "../Assets/gallery.png";
-import NotificationsTable from '../components/NotificationsTable'; 
+import NotificationsTable from '../components/NotificationsTable';
 import { MdOutlineAttachment } from "react-icons/md";
 
 const Notifications = () => {
@@ -12,17 +12,23 @@ const Notifications = () => {
 
 
   const [fileImage, setfileImage] = useState("")
+  const [resourceType, setResourceType] = useState("seeker")
   const [fileDoc, setfileDoc] = useState("")
   const [file, setfile] = useState("")
+  const [selectedUser, setSelectedUser] = useState([])
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    resourceType: 'provider',
+    resource_type: 'provider',
     city: '',
     image: null,
-    userIds: [],
+    userIds: selectedUser,
+
   });
 
+  useEffect(() => {
+    console.log(formData, 'payload updated')
+  }, [formData])
   useEffect(() => {
     // Fetch all users when the component mounts
     dispatch(fetchAllUsers());
@@ -31,8 +37,20 @@ const Notifications = () => {
 
 
   const handleSubmit = (e) => {
+    console.log(selectedUser)
     e.preventDefault();
-    dispatch(pushNotification(formData));
+    const data = new FormData();
+    data.append('title', formData.title);
+    data.append('description', formData.description);
+    data.append('image', fileImage);
+    selectedUser.forEach((userId)=>{
+      data.append('user_id[]', userId);
+    })
+    data.append('attachment', fileDoc);
+    data.append('city', formData.city);
+    data.append('resource_type', resourceType);
+    console.log(data)
+    dispatch(pushNotification(data));
   };
 
   const handleImageUpload = (e) => {
@@ -40,7 +58,7 @@ const Notifications = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setfileImage(reader.result);
+        setfileImage(e.target.files[0]);
         console.log(file)
       };
       reader.readAsDataURL(file);
@@ -52,7 +70,7 @@ const Notifications = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setfileDoc(reader.result);
+        setfileDoc(e.target.files[0]);
         console.log(fileDoc)
       };
       reader.readAsDataURL(file);
@@ -66,6 +84,20 @@ const Notifications = () => {
       [name]: value,
     }));
   };
+
+  const handleSelectUser = (id) => {
+    setSelectedUser((prevSelected) => {
+      if (prevSelected.includes(id)) {
+        // If the user is already selected, remove them
+        return prevSelected.filter((userId) => userId !== id);
+      } else {
+        // If the user is not selected, add them
+        return [id, ...prevSelected];
+      }
+    });
+  };
+
+
 
   return (
     <div className="overflow-x-auto">
@@ -85,6 +117,8 @@ const Notifications = () => {
                   type="text"
                   placeholder="Enter the Title"
                   className="border border-gray-300 p-4 w-full rounded-lg text-sm"
+                  onChange={handleInputChange}
+                  name='title'
                 />
               </div>
               <div className="mb-4">
@@ -94,6 +128,8 @@ const Notifications = () => {
                 <textarea
                   placeholder="Enter Description"
                   className="border border-gray-300 p-4 rounded-lg w-full h-40 text-sm"
+                  onChange={handleInputChange}
+                  name='description'
                 />
               </div>
               <div className="mb-4">
@@ -102,13 +138,24 @@ const Notifications = () => {
                     Resources Type:
                   </label>
                   <label className="flex items-center">
-                    <input type="radio" name="resourceType" value="service" />
-                    <span className="ml-2">Providers</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input type="radio" name="resourceType" value="link" />
+                    <input
+                      type="radio"
+                      name="resourceType"
+                      value="seeker"
+                      onChange={(e) => setResourceType(e.target.value)}
+                    />
                     <span className="ml-2">Seekers</span>
                   </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="resourceType"
+                      value="provider"
+                      onChange={(e) => setResourceType(e.target.value)}
+                    />
+                    <span className="ml-2">Providers</span>
+                  </label>
+
                 </div>
               </div>
               {/* city and user input */}
@@ -118,15 +165,20 @@ const Notifications = () => {
                     type="text"
                     placeholder="City"
                     className="w-full py-2 px-4 border border-gray-300 rounded-lg text-sm"
+                    name='city'
+                    onChange={handleInputChange}
+
                   />
                 </div>
-                <div className="relative w-full">
+                {/* <div className="relative w-full">
                   <input
                     type="text"
                     placeholder="Select User"
                     className="w-full py-2 px-4 border border-gray-300 rounded-lg text-sm"
+                    onChange={handleInputChange}
+
                   />
-                </div>
+                </div> */}
               </div>
             </div>
             {/* right side */}
@@ -134,7 +186,7 @@ const Notifications = () => {
               <div className="flex flex-col md:flex-row items-center justify-center py-4 md:py-10 gap-4">
                 <label htmlFor='file' className="flex flex-col items-center max-w-xs md:max-w-sm w-[250px] h-[150px] p-4 rounded-xl border-2 border-dashed border-gray-300">
                   <img
-                    src={ fileImage || gallery}
+                    src={fileImage || gallery}
                     alt="gallery"
                     className="w-12 h-12 opacity-40"
                   />
@@ -142,7 +194,7 @@ const Notifications = () => {
                     Upload or Drag Photo
                   </h1>
                 </label>
-                <input type='file' id='file' className='hidden' onChange={handleImageUpload}/>
+                <input type='file' id='file' className='hidden' onChange={handleImageUpload} />
                 <div className="flex flex-col justify-center text-center md:text-left text-xs">
                   <h1 className="text-gray-600">
                     Image format - jpg png jpeg gif
@@ -156,9 +208,9 @@ const Notifications = () => {
 
               {/* attachment input */}
               <label htmlFor='Doc' className="relative mb-4">
-              <div className='border-2 p-2 border-dotted border-gray-300 rounded-lg w-full md:w-[250px] text-sm'>Attach document 
-              <MdOutlineAttachment className="absolute right-4 md:right-60 top-1/2 transform -translate-y-1/2 pointer-events-none" />
-              </div>
+                <div className='border-2 p-2 border-dotted border-gray-300 rounded-lg w-full md:w-[250px] text-sm'>Attach document
+                  <MdOutlineAttachment className="absolute right-4 md:right-60 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+                </div>
               </label>
               <input
                 type="file"
@@ -169,10 +221,10 @@ const Notifications = () => {
                 className="hidden p-2 border-2 border-dotted border-gray-300 rounded-lg w-full md:w-[250px] text-sm"
               />
               <p className="text-md font-poppins text-gray-600 mt-2 mb-4">
-                {file.name}  
+                {file.name}
               </p>
               <p className="text-xs font-poppins text-gray-600 mt-2 mb-4">
-                File size - maximum size 2 MB  
+                File size - maximum size 2 MB
               </p>
 
               {/* Buttons */}
@@ -184,7 +236,7 @@ const Notifications = () => {
                   RESET
                 </button>
                 <button
-                onClick={handleSubmit}
+                  onClick={handleSubmit}
                   type="submit"
                   className="bg-blue-500 px-4 py-2 w-full md:w-auto rounded-lg text-white"
                 >
@@ -194,7 +246,8 @@ const Notifications = () => {
             </div>
           </form>
         </div>
-        <NotificationsTable users={users} />
+        <NotificationsTable users={users} selectUser={handleSelectUser} />;
+
       </div>
     </div>
   );

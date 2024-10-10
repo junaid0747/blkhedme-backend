@@ -11,19 +11,8 @@ export const pushNotification = createAsyncThunk(
   'notifications/pushNotification',
   async (notificationData, { rejectWithValue }) => {
     try {
-      const formData = new FormData();
-      formData.append('title', notificationData.title);
-      formData.append('description', notificationData.description);
-      formData.append('resource_type', notificationData.resourceType);
-      formData.append('city', notificationData.city);
-      formData.append('image', notificationData.image);
-
-      // array of user_ids to send notification to.
-      notificationData.userIds.forEach((id, index) => {
-        formData.append(`user_id[${index}]`, id);
-      });
-
-      const response = await axios.post(PUSH_NOTIFICATION_URL, formData, {
+     
+      const response = await axios.post(PUSH_NOTIFICATION_URL, notificationData, {
         headers: {
           Authorization: `Bearer ${API_TOKEN}`,
           Accept: 'application/json',
@@ -32,6 +21,7 @@ export const pushNotification = createAsyncThunk(
       console.log("users Ids: ", response.data);
       return response.data;
     } catch (error) {
+      console.log(error)
       return rejectWithValue(error.response.data);
     }
   }

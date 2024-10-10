@@ -51,7 +51,7 @@ const EditProviderModal = ({
 
   return (
     <div className="h-screen w-screen fixed top-0 left-0 inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50 p-16">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96 overflow-y-scroll">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[95%] overflow-y-scroll">
         <h2 className="text-lg font-semibold mb-4">Edit Provider</h2>
         <form onSubmit={handleSubmit}>
           {/* First Name */}
@@ -373,7 +373,7 @@ const ProviderList = () => {
   }
 
   return (
-    <div className="space-y-4 font-poppins">
+    <div className=" font-poppins">
       {/* Add New Provider Button */}
       <div className="flex justify-end pt-4 pr-4 w-full">
         <button
@@ -432,7 +432,7 @@ const ProviderList = () => {
                       src={provider.image || notificationImg} // Fallback image if provider.image is null
                       alt={`${provider.first_name} ${provider.last_name}`}
                       className="w-8 h-8 rounded-full mr-2"
-                      style={{ width: '100%', height:200 }}
+                      style={{ width: '50px', height:'50px' }}
 
                     />
                     {`${provider.first_name} ${provider.last_name}`}

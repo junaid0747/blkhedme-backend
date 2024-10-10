@@ -3,7 +3,7 @@ import { BsThreeDots } from "react-icons/bs";
 import notificationImg from "../Assets/notificationImg.png";
 import { IoMdStar } from "react-icons/io";
 
-const NotificationsTable = ({ users }) => {
+const NotificationsTable = ({ users ,selectUser }) => {
   if (!Array.isArray(users)) {
     return <div>No users found</div>;
   }
@@ -16,7 +16,7 @@ const NotificationsTable = ({ users }) => {
             <tr className="bg-[#8498E0] text-xs text-center font-thin text-white">
               <th className="p-3 ">
                 <span className="block py-2 px-3 border-r border-gray-300">
-                  <input type="checkbox" className="h-4 w-4 rounded" />
+                  <input type="checkbox" className="h-4 w-4 rounded"/>
                 </span>
               </th>
               <th className="p-0 ">
@@ -78,7 +78,7 @@ const NotificationsTable = ({ users }) => {
             {users.map((user, index) => (
               <tr key={user.id} className="border-b text-xs text-center text-gray-800">
                 <td className="p-3">
-                  <input type="checkbox" className="h-4 w-4 rounded" />
+                  <input type="checkbox" className="h-4 w-4 rounded"  onChange={()=>{selectUser(user.id)}}/>
                 </td>
                 <td className="p-3">{index + 1}</td>
                 <td className="p-3">
