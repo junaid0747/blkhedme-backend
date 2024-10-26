@@ -31,11 +31,16 @@ const SubCategorySetup = () => {
       fileInputRef.current.click();
     }
   };
-
+  const token = localStorage.getItem('authToken');
   const fetchData = async () => {
     try {
-      const { data } = await axios.get('https://apiv2.blkhedme.com/api/locations/show');
-      setLocations(data.location); 
+      const { data } = await axios.get('https://apiv2.blkhedme.com/api/admin/categories',{
+        headers : {
+          'Accept': 'application/json',
+          "Authorization": `Bearer ${token}`,
+        }
+      });
+      setLocations(data.category); 
     } catch (error) {
       console.error('There was an error fetching the data!', error);
     }
@@ -47,22 +52,24 @@ const SubCategorySetup = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if(!selectedCity || selectedCity === '0'){
+      alert('Please select a parent category!')
+      return false;
+    }
     setIsSubmitting(true);
     setSubmissionMessage('');
 
-    const locationId = locations.find(location => location.title === selectedCity)?.id;
-    console.log("locationID: ", locationId);
-
     // Define parent_id if applicable, or set to null
-    const parentId = undefined; // Change this as per your logic if you need to get a parent ID
-
-    const newSubCategory = {
-        name: categoryName,
-        location_id: locationId || null,
-        description,
-        image: null, // Set to null if you don't want to submit the image
-        parent_id: parentId || -1 // Set to null/-1 if not defined
-    };
+    const newSubCategory = new FormData();
+    newSubCategory.append('name', categoryName);
+    newSubCategory.append('description',description)
+    newSubCategory.append('parent_id',selectedCity)
+    newSubCategory.append('image',selectedFile)
+    //     name: categoryName,
+    //     description,
+    //     image: null, // Set to null if you don't want to submit the image
+    //     parent_id: selectedCity // Set to null/-1 if not defined
+    // };
 
     console.log("Submitting subcategory:", newSubCategory);
 
@@ -89,7 +96,7 @@ const SubCategorySetup = () => {
       <div className="w-full max-w-lg bg-white p-8 shadow-lg rounded-lg">
         <h1 className="text-2xl font-bold text-black mb-6">Sub Category Setup</h1>
 
-        <div className="flex space-x-4 mb-6">
+        {/* <div className="flex space-x-4 mb-6">
           <button
             className={`px-4 py-2 rounded-md ${language === "default" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
             onClick={() => setLanguage("default")}
@@ -108,18 +115,18 @@ const SubCategorySetup = () => {
           >
             Arabic - العربية
           </button>
-        </div>
+        </div> */}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
-            <label className="block text-gray-600 font-semibold mb-2">Category Name (Default)</label>
+            <label className="block text-gray-600 font-semibold mb-2">Subcategory Name</label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                 <FaBuffer className="h-5 w-5 text-gray-400" />
               </span>
               <input
                 type="text"
-                placeholder="Enter Category Name"
+                placeholder="Enter Subcategory Name"
                 value={categoryName}
                 onChange={(e) => setCategoryName(e.target.value)}
                 className="w-full pl-10 p-3 border rounded-md focus:outline-none"
@@ -137,9 +144,9 @@ const SubCategorySetup = () => {
                 className="w-1/2 md:w-full p-3 border rounded-md focus:outline-none"
                 required
               >
-                <option value="">Select City</option>
+                <option value="0">Select Parent Category</option>
                 {locations.map((location, index) => (
-                  <option value={location.title} key={index}>{location.title}</option>
+                  <option value={location.id} key={index}>{location.title}</option>
                 ))}
               </select>
             </div>

@@ -28,15 +28,13 @@ export const createBanner = createAsyncThunk(
       try {
         const token = localStorage.getItem('authToken');
         
-        //i Remove this image field from bannerData if it's not supposed to be sent
-        const { image, ...dataWithoutImage } = bannerData;
   
         // Send only the fields which are accepted by the server
         const response = await axios.post(`${API_URL}/store/Update`, bannerData, {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: 'application/json',
-            'Content-Type': 'application/json', 
+            'Content-Type': 'multipart/form-data',
           },
         });
   

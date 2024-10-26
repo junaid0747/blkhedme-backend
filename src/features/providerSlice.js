@@ -126,6 +126,7 @@ const providerSlice = createSlice({
   name: 'providers',
   initialState: {
     providers: [],
+    onBoradingRequestsCount:0,
     loading: false,
     error: null,
   },
@@ -139,6 +140,7 @@ const providerSlice = createSlice({
       })
       .addCase(fetchProviders.fulfilled, (state, action) => {
         state.loading = false;
+        state.onBoradingRequestsCount=action.payload.filter((request) => request.professional_status !== "inactive" && request.professional_status === "pending").length
         state.providers = action.payload;
       })
       .addCase(fetchProviders.rejected, (state, action) => {

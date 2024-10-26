@@ -427,7 +427,7 @@ const ProviderList = () => {
               >
                 <td className="p-2">{index + 1}</td>
                 <td className="p-2">
-                  <div className="flex items-center justify-center">
+                  <div className="flex items-center">
                     <img
                       src={provider.image || notificationImg} // Fallback image if provider.image is null
                       alt={`${provider.first_name} ${provider.last_name}`}

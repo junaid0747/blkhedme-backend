@@ -24,6 +24,7 @@ import { MdKeyboardArrowRight, MdMenu, MdClose } from "react-icons/md";
 import { IoIosArrowDown } from "react-icons/io";
 import activelocationImg from "../Assets/activelocationImg.svg";
 import inactivelocationImg from "../Assets/inactivelocationImg.svg";
+import { useSelector } from "react-redux";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -36,6 +37,8 @@ const Sidebar = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+
 
   return (
     <>
@@ -310,7 +313,11 @@ const NavItem = ({
   isActive,
   notification,
   location,
-}) => (
+}) =>{
+  const { onBoradingRequestsCount } = useSelector((state) => state.providers);
+
+  return (
+  
   <RouterLink
     to={to}
     className={`flex items-center space-x-2 hover:bg-[#004E89] rounded ${
@@ -327,11 +334,12 @@ const NavItem = ({
     <span>{label}</span>
     {notification && (
       <span className="ml-auto bg-red-500 text-white rounded-full px-2 text-sm">
-        8
+        {onBoradingRequestsCount}
       </span>
     )}
   </RouterLink>
 );
+}
 
 const DropdownNavItem = ({
   activeIcon,

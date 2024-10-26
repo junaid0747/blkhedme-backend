@@ -2,7 +2,15 @@ import StatsCards from '../components/StatsCards'
 import ProvidersList from '../components/ProvidersList'
 import OnboardingRequests from '../components/OnboardingRequests';
 import EarningsChart from '../components/EarningsChart';
+import { useEffect } from 'react';
+import { fetchProviders } from '../features/providerSlice';
+import { useDispatch } from 'react-redux';
 const DashboardPage = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchProviders());
+  }, []);
   return (
     <div className='w-full '>
       <StatsCards />

@@ -115,7 +115,7 @@ const OnboardTable = ({ activeTab }) => {
   // Filter requests based on the active tab
   const filteredRequests =
     activeTab === "onboarding"
-      ? providers.filter((request) => request.professional_status !== "inactive")
+      ? providers.filter((request) => request.professional_status !== "inactive" && request.professional_status === "pending")
       : providers.filter((request) => request.professional_status === "inactive"); // Assuming "inactive" is for denied requests
 
   return (

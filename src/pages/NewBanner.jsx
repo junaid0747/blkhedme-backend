@@ -28,13 +28,12 @@ const NewBanner = ({ isOpen, onClose, onAddBanner }) => {
     e.preventDefault(); // Prevent form from reloading the page
 
     // Construct the data to be submitted
-    const bannerData = {
-      title,
-      resource_type: resourceType,
-      category_id: categoryId,
-      image: fileImage, // Placeholder since we are not uploading an image
-      link : Link
-    };
+    const bannerData = new FormData();
+    bannerData.append('title',title);
+    bannerData.append('resource_type',resourceType);
+    bannerData.append('category_id',categoryId);
+    bannerData.append('image',fileImage);
+    bannerData.append('link',Link);
 
     // Call the parent function to submit the data
     onAddBanner(bannerData);
@@ -47,7 +46,7 @@ const NewBanner = ({ isOpen, onClose, onAddBanner }) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setfileImage(reader.result);
+        setfileImage(file);
         console.log(file)
       };
       reader.readAsDataURL(file);

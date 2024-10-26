@@ -28,15 +28,9 @@ export const addSubCategory = createAsyncThunk(
   'subCategories/addSubCategory',
   async (data, { rejectWithValue }) => {
     const token = localStorage.getItem('authToken');
-    const formData = new FormData();
-    formData.append('location_id', data.location_id);
-    formData.append('name', data.name);
-    formData.append('image', data.image);
-    formData.append('description', data.description);
-    formData.append('parent_id', data.parent_id);
 
     try {
-      const response = await axios.post(API_URL, formData, {
+      const response = await axios.post(API_URL, data, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',

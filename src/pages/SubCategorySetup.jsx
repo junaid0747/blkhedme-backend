@@ -132,8 +132,8 @@ const SubCategorySetup = () => {
                   </td>
                   <td className="p-2">{index + 1}</td>
                   <td className="p-2">{category?.name || "N/A"}</td>
-                  <td className="p-2">{category?.parent_id || "N/A"}</td>
-                  <td className="p-2">{category?.NumberOfProvider || "N/A"}</td>
+                  <td className="p-2">{category?.category?.title || "N/A"}</td>
+                  <td className="p-2">{category?.providers_count}</td>
                   <td className="p-2">
                     <label className="inline-flex items-center cursor-pointer">
                       <input
