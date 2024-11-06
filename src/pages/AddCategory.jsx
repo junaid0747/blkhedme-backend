@@ -44,7 +44,7 @@ const CategorySetup = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
   
-    if (!categoryName || !selectedCity || !selectedFile) {
+    if (!categoryName || !selectedFile) {
       alert("Please fill all fields and upload an image.");
       return;
     }
@@ -112,7 +112,7 @@ const CategorySetup = () => {
             </div>
           </div>
 
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <label className="block text-gray-600 font-semibold mb-2">Select City</label>
             <div className="relative">
               <select
@@ -126,7 +126,7 @@ const CategorySetup = () => {
                 ))}
               </select>
             </div>
-          </div>
+          </div> */}
 
           {showUploadArea ? (
             <div className="mb-6 border-2 border-dashed border-gray-300 rounded-md flex justify-center items-center h-48 cursor-pointer relative">

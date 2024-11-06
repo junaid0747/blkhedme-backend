@@ -113,9 +113,9 @@ const ProviderPreview = ({ providerData, providerId }) => {
             </p>
           </div>
           <div className="mt-4 text-right">
-            <button className="bg-blue-600 text-white px-6 py-2 rounded-lg">
+            {/* <button className="bg-blue-600 text-white px-6 py-2 rounded-lg">
               Edit
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -195,7 +195,7 @@ const ProviderPreview = ({ providerData, providerId }) => {
                       <div className="w-1 h-1 bg-slate-600 rounded-full inline-block mb-[2px]"></div>{" "}
                     </strong>
                     <strong className="text-[#616161] text-[12px] ml-1">
-                      {providerData.category.title || "N/A"}
+                      {providerData?.category?.title || "N/A"}
                     </strong>
                   </p>
                   <p>
@@ -233,7 +233,7 @@ const ProviderPreview = ({ providerData, providerId }) => {
                       <div className="w-1 h-1 bg-slate-600 rounded-full inline-block mb-[2px]"></div>{" "}
                     </strong>
                     <strong className="text-[#616161] text-[12px] ml-1">
-                      {providerData?.category.title || "N/A"}
+                      {providerData?.category?.title || "N/A"}
                     </strong>
                   </p>
                 </div>
