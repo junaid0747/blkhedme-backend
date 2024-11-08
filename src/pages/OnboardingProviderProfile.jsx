@@ -9,7 +9,7 @@ const OnboardingProviderProfile = () => {
   const dispatch = useDispatch();
   const location = useLocation(); // Initialize useLocation
   const { providerData, loading, error } = useSelector((state) => state.provider);
-  
+
   // Get the provider ID from the URL query parameter
   const queryParams = new URLSearchParams(location.search);
   const providerId = queryParams.get('id');
@@ -20,6 +20,8 @@ const OnboardingProviderProfile = () => {
     }
   }, [dispatch, providerId]);
 
+
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -29,13 +31,20 @@ const OnboardingProviderProfile = () => {
     <div>
       {provider && <ProviderPreview providerData={provider} providerId={providerId} />} {/* Pass providerId as prop */}
       <div>
-        <div className="flex space-x-4 border-b font-poppins">
-          <button className="font-semibold text-black">Reviews <span>(04)</span></button>
-          <button className="font-semibold text-gray-500">Reports</button>
-        </div>
-        <div className="reviews">
-          <Review />
-        </div>
+        {
+          provider?.provider_reviews?.length > 0 &&
+          <>
+            <div className="flex space-x-4 border-b font-poppins">
+              <button className="font-semibold text-black">Reviews <span>(04)</span></button>
+              <button className="font-semibold text-gray-500">Reports</button>
+            </div>
+            <div className="reviews">
+              <Review 
+              reviews = {provider?.provider_reviews}
+              />
+            </div>
+          </>
+        }
       </div>
     </div>
   );

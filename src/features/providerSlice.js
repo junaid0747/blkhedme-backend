@@ -106,6 +106,32 @@ export const updateProviderStatus = createAsyncThunk(
   }
 );
 
+export const updateProviderAvailability = createAsyncThunk(
+  'providers/updateProviderAvailability',
+  async ({ providerId, newAvailability }, { rejectWithValue }) => {
+    const token = localStorage.getItem('authToken'); 
+    try {
+      const response = await axios.post(
+        `${API_URL}/availability`,
+        {
+          provider_id: providerId,
+          availability: newAvailability,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        }
+      );
+     
+      return { providerId, newAvailability }; 
+    } catch (error) {
+      return rejectWithValue(error.response ? error.response.data : 'Unknown error');
+    }
+  }
+);
+
 // Deleting a provider
 export const deleteProvider = createAsyncThunk('providers/deleteProvider', async (id) => {
   const token = localStorage.getItem('authToken');

@@ -12,6 +12,7 @@ import {
   deleteProvider,
   updateProvider,
   updateProviderStatus,
+  updateProviderAvailability
 } from '../features/providerSlice';
 import { fetchCategories } from '../features/categorySlice';
 import notificationImg from '../Assets/notificationImg.png';
@@ -347,6 +348,19 @@ const ProviderList = () => {
       });
   };
 
+  const handleAvailabilityChange = (providerId, currentAvailability) => {
+    const newAvailability = currentAvailability === 'active' ? 'inactive' : 'active';
+    dispatch(updateProviderAvailability({ providerId, newAvailability }))
+      .unwrap()
+      .then(() => {
+        dispatch(fetchProviders());
+        toast.success('Provider Availability updated successfully');
+      })
+      .catch((err) => {
+        toast.error(`Failed to change Availability: ${err.message || err}`);
+      });
+  };
+
   // Handle Delete Provider with Confirmation
   const handleDelete = (providerId) => {
     if (
@@ -460,10 +474,22 @@ const ProviderList = () => {
                   {provider.call_logs_count || 'N/A'}
                 </td>
                 <td className="p-2">
-                  <input
+                  {/* <input
                     type="checkbox"
                     checked={provider.availability === 'active'}
                     readOnly
+                  /> */}
+                   <input
+                    type="checkbox"
+                    id={`status-${provider.id}`}
+                    checked={provider.availability === 'active'}
+                    onChange={() =>
+                      handleAvailabilityChange(
+                        provider.id,
+                        provider.availability
+                      )
+                    }
+                    className="mr-2 cursor-pointer"
                   />
                 </td>
                 <td className="p-2">
@@ -493,6 +519,15 @@ const ProviderList = () => {
                   </button>
                   {dropdownOpen === provider.id && (
                     <div className="absolute right-0 bg-white shadow-md rounded mt-1 z-10">
+                      
+                       <button
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                        onClick={() =>
+                          navigate(`/onboarding-provider-profile?id=${provider.id}`)
+                        } 
+                      >
+                        View
+                      </button>
                       <button
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                         onClick={() => handleEdit(provider)}

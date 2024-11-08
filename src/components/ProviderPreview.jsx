@@ -23,7 +23,7 @@ const urlToFile = async (url, fileName) => {
     console.log("MIME type of identity card:", mimeType);
 
     const allowedMimeTypes = ["image/jpeg", "image/png", "image/jpg", "application/pdf"];
-    
+
     if (!allowedMimeTypes.includes(mimeType)) {
       throw new Error(`Invalid file type: ${mimeType}`);
     }
@@ -60,22 +60,22 @@ const ProviderPreview = ({ providerData, providerId }) => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (password !== confirmPassword) {
       toast.error("Passwords do not match!");
       return;
     }
-  
+
     if (!providerInformation) {
       toast.error("Provider information not loaded yet!");
       return;
     }
-  
+
     try {
       const formData = new FormData();
       formData.append("password", password);
       formData.append("confirm_password", confirmPassword);
-  
+
       // Append other fields fetched from provider information
       formData.append("first_name", providerData.first_name);
       formData.append("last_name", providerData.last_name);
@@ -83,13 +83,13 @@ const ProviderPreview = ({ providerData, providerId }) => {
       formData.append("email", providerData.email);
       formData.append("area_of_operation", providerData.category.id);
       formData.append("profession", providerData.profession);
-      formData.append("identity_card",providerData.identity_card)
-  
+      formData.append("identity_card", providerData.identity_card)
+
       // Convert identity_card URL to file and append it
-      
+
       // Dispatch updateProvider action with the updated form data
       await dispatch(updateProvider({ id: providerId, updatedData: formData }));
-      
+
       toast.success("Password updated successfully!");
       setPassword("");
       setConfirmPassword("");
@@ -98,7 +98,7 @@ const ProviderPreview = ({ providerData, providerId }) => {
       console.error("Error updating provider:", error);
     }
   };
-  
+
 
   const formattedDate = new Date(providerData.created_at).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
   return (
@@ -244,43 +244,25 @@ const ProviderPreview = ({ providerData, providerId }) => {
             <div className="p-4">
               <h2 className="font-semibold text-lg mb-2 border-b border-black font-inter">Other Information</h2>
               <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                <img
-                  src={otherImg1}
-                  alt="Other info 1"
-                  className="rounded-lg"
-                />
-                <img
-                  src={otherImg2}
-                  alt="Other info 2"
-                  className="rounded-lg"
-                />
-                <img
-                  src={otherImg3}
-                  alt="Other info 3"
-                  className="rounded-lg"
-                />
-                <img
-                  src={otherImg4}
-                  alt="Other info 4"
-                  className="rounded-lg"
-                />
-                <img
-                  src={otherImg5}
-                  alt="Other info 5"
-                  className="rounded-lg"
-                />
-                <img
-                  src={otherImg6}
-                  alt="Other info 6"
-                  className="rounded-lg"
-                />
+              {providerData?.gallery?.length > 0 &&
+  providerData.gallery.map((item, index) => (
+    <img
+      key={item.id || index}  // Use item.id if available, otherwise fallback to index
+      src={item.image}  // Access the image URL from the item object
+      alt={`Other info ${index + 1}`}
+      className="rounded-lg"
+    />
+  ))
+}
+
+
               </div>
             </div>
           </div>
 
 
           <div className="font-inter">
-          {/* the updating password seciton is commented uncomment it if you want allow user to update password */}
+            {/* the updating password seciton is commented uncomment it if you want allow user to update password */}
             {/* <div className="p-4">
               <h1 className="text-xl font-bold mb-4">Update Provider Password</h1>
               {providerInformation ? (
