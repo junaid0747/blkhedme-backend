@@ -6,12 +6,15 @@ const API_URL = "https://apiv2.blkhedme.com/api/admin/subcategories";
 // Fetching all subcategories
 export const fetchSubCategories = createAsyncThunk(
   'subCategories/fetchSubCategories',
-  async () => {
+  async (query) => {
     const token = localStorage.getItem('authToken');
     try {
       const response = await axios.get(`${API_URL}/all`, {
         headers: {
           Authorization: `Bearer ${token}`,
+        },
+        params: {
+          query,  // Pass the query parameter
         },
       });
       console.log("Fetched sub Categories: ", response.data.data)

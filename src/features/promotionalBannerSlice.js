@@ -4,22 +4,29 @@ import axios from 'axios';
 const API_URL = 'https://apiv2.blkhedme.com/api/admin/promotional/banner';
 
 // Async thunk to fetch promotional banners
-export const fetchBanners = createAsyncThunk('banners/fetchBanners', async (_, { rejectWithValue }) => {
-  try {
-    const token = localStorage.getItem('authToken');
-    const response = await axios.get(API_URL, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-      },
-    });
-    console.log('Fetched banners:', response.data.data);
-    return response.data.data;
-  } catch (error) {
-    console.error('Fetch banners error:', error.response.data);
-    return rejectWithValue(error.response.data);
+export const fetchBanners = createAsyncThunk(
+  'banners/fetchBanners', 
+  async (query, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.get(API_URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+        params: {
+          query,  // Pass the query parameter here
+        },
+      });
+      console.log('Fetched banners:', response.data.data);
+      return response.data.data;
+    } catch (error) {
+      console.error('Fetch banners error:', error.response?.data || error.message);
+      return rejectWithValue(error.response?.data || error.message); // Handle case where error.response is undefined
+    }
   }
-});
+);
+
 
 // Async thunk to create a new banner (without image)
 export const createBanner = createAsyncThunk(

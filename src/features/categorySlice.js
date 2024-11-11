@@ -5,12 +5,15 @@ import axios from 'axios';
 const API_URL = 'https://apiv2.blkhedme.com/api/admin/categories';
 
 // Fetching all categories
-export const fetchCategories = createAsyncThunk('category/fetchCategories', async () => {
+export const fetchCategories = createAsyncThunk('category/fetchCategories', async (query) => {
   const token = localStorage.getItem('authToken');
   try {
     const response = await axios.get(API_URL, {
       headers: {
         Authorization: `Bearer ${token}`, 
+      },
+      params: {
+        query,  // Pass the query parameter
       },
     });
     console.log("Fetched Category: ",response.data.category)

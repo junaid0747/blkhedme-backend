@@ -10,6 +10,9 @@ import { useNavigate, useLocation } from "react-router-dom"; // Import useNaviga
 import person from "../Assets/person.png";
 import { fetchProviders } from '../features/providerSlice';
 import { fetchSeekers } from '../features/seekerSlice';
+import { fetchCategories, } from "../features/categorySlice";
+import { fetchSubCategories, } from "../features/subCategorySlice";
+import { fetchBanners } from "../features/promotionalBannerSlice";
 
 
 const Topbar = () => {
@@ -47,11 +50,11 @@ const Topbar = () => {
   // Handle the search button click
   const handleSearch = () => {
     console.log('Searching for:', searchQuery); // Log the query for debugging
-  
+
     // Check if the searchQuery is empty
     if (!searchQuery.trim()) {
       console.log('No search query entered. Fetching all data...');
-      
+
       // Call function to fetch all data
       switch (location.pathname) {
         case '/list-of-provider':
@@ -63,13 +66,22 @@ const Topbar = () => {
         case '/onboarding-requests-page':
           searchRequests('');   // Add logic for fetching all requests if needed
           break;
+        case '/category-setup':
+          searchCategories('');   // Add logic for fetching all requests if needed
+          break;
+        case '/sub-category-setup':
+          searchSubCategories('');   // Add logic for fetching all requests if needed
+          break;
+        case '/promotional-banners':
+          searchBanners('');   // Add logic for fetching all requests if needed
+          break;
         default:
           console.log('Search route not found');
           break;
       }
       return; // Exit early to avoid unnecessary search
     }
-  
+
     // If there is a search query, perform the filtered search
     switch (location.pathname) {
       case '/list-of-provider':
@@ -81,12 +93,21 @@ const Topbar = () => {
       case '/onboarding-requests-page':
         searchRequests(searchQuery);   // Search logic for requests
         break;
+      case '/category-setup':
+        searchCategories(searchQuery);   // Add logic for fetching all requests if needed
+        break;
+      case '/sub-category-setup':
+        searchSubCategories(searchQuery);   // Add logic for fetching all requests if needed
+        break;
+      case '/promotional-banners':
+        searchBanners(searchQuery);   // Add logic for fetching all requests if needed
+        break;
       default:
         console.log('Search route not found');
         break;
     }
   };
-  
+
   const searchProviders = (query) => {
     if (query.trim() === '') {
       dispatch(fetchProviders());
@@ -94,7 +115,7 @@ const Topbar = () => {
       dispatch(fetchProviders(query));
     }
   };
-  
+
   const searchSeekers = (query) => {
     if (query.trim() === '') {
       dispatch(fetchSeekers());
@@ -108,6 +129,27 @@ const Topbar = () => {
       dispatch(fetchProviders());
     } else {
       dispatch(fetchProviders(query));
+    }
+  };
+  const searchCategories = (query) => {
+    if (query.trim() === '') {
+      dispatch(fetchCategories());
+    } else {
+      dispatch(fetchCategories(query));
+    }
+  };
+  const searchSubCategories = (query) => {
+    if (query.trim() === '') {
+      dispatch(fetchSubCategories());
+    } else {
+      dispatch(fetchSubCategories(query));
+    }
+  };
+  const searchBanners = (query) => {
+    if (query.trim() === '') {
+      dispatch(fetchBanners());
+    } else {
+      dispatch(fetchBanners(query));
     }
   };
 
