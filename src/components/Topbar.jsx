@@ -6,16 +6,21 @@ import { CiGlobe } from "react-icons/ci";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { useDispatch } from "react-redux"; // Import useDispatch
 import { logoutSuccess } from "../authSlice"; // Import logoutSuccess action from Redux
-import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import { useNavigate, useLocation } from "react-router-dom"; // Import useNavigate for redirection
 import person from "../Assets/person.png";
+import { fetchProviders } from '../features/providerSlice';
+import { fetchSeekers } from '../features/seekerSlice';
+
 
 const Topbar = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("EN");
   const [isLogoutOpen, setLogoutOpen] = useState(false); // State for logout dropdown
+  const [searchQuery, setSearchQuery] = useState("");
 
   const dispatch = useDispatch(); // Initialize dispatch
   const navigate = useNavigate(); // Initialize navigate for redirection
+  const location = useLocation();
 
   const handleDropdownToggle = () => {
     setDropdownOpen(!isDropdownOpen);
@@ -35,6 +40,77 @@ const Topbar = () => {
     navigate("/sign-in"); // Redirect to the sign-in page
   };
 
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);  // Update query on input change
+  };
+
+  // Handle the search button click
+  const handleSearch = () => {
+    console.log('Searching for:', searchQuery); // Log the query for debugging
+  
+    // Check if the searchQuery is empty
+    if (!searchQuery.trim()) {
+      console.log('No search query entered. Fetching all data...');
+      
+      // Call function to fetch all data
+      switch (location.pathname) {
+        case '/list-of-provider':
+          searchProviders('');  // Pass an empty string or null to fetch all providers
+          break;
+        case '/list-of-seeker':
+          searchSeekers('');    // Add logic for fetching all seekers if needed
+          break;
+        case '/onboarding-requests-page':
+          searchRequests('');   // Add logic for fetching all requests if needed
+          break;
+        default:
+          console.log('Search route not found');
+          break;
+      }
+      return; // Exit early to avoid unnecessary search
+    }
+  
+    // If there is a search query, perform the filtered search
+    switch (location.pathname) {
+      case '/list-of-provider':
+        searchProviders(searchQuery);  // Search logic for providers
+        break;
+      case '/list-of-seeker':
+        searchSeekers(searchQuery);    // Search logic for seekers
+        break;
+      case '/onboarding-requests-page':
+        searchRequests(searchQuery);   // Search logic for requests
+        break;
+      default:
+        console.log('Search route not found');
+        break;
+    }
+  };
+  
+  const searchProviders = (query) => {
+    if (query.trim() === '') {
+      dispatch(fetchProviders());
+    } else {
+      dispatch(fetchProviders(query));
+    }
+  };
+  
+  const searchSeekers = (query) => {
+    if (query.trim() === '') {
+      dispatch(fetchSeekers());
+    } else {
+      dispatch(fetchSeekers(query));
+    }
+  };
+
+  const searchRequests = (query) => {
+    if (query.trim() === '') {
+      dispatch(fetchProviders());
+    } else {
+      dispatch(fetchProviders(query));
+    }
+  };
+
   return (
     <header className="bg-white w-full flex flex-col-reverse min-[490px]:flex-row gap-4 justify-center items-center p-4 shadow">
       <div className="flex-grow flex justify-between md:justify-center">
@@ -43,8 +119,18 @@ const Topbar = () => {
             type="text"
             placeholder="Search"
             className="bg-transparent p-2 outline-none w-full"
+            value={searchQuery}
+            onChange={handleSearchChange}  // Update query on change
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {  // Trigger search when Enter is pressed
+                handleSearch();
+              }
+            }}
           />
-          <FaSearch className="text-gray-400" />
+          <FaSearch
+            className="text-gray-400 cursor-pointer"
+            onClick={handleSearch}  // Execute search on click
+          />
         </div>
       </div>
 

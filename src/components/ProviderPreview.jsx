@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import ProfileImg from "../Assets/profileImg.svg";
 import IdentityImg from "../Assets/identityImg.svg";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Link } from "react-router-dom";
 import pdfImg from "../Assets/pdf.svg";
 import otherImg1 from "../Assets/others1.svg";
@@ -11,7 +13,7 @@ import otherImg3 from "../Assets/others3.svg";
 import otherImg4 from "../Assets/others4.svg";
 import otherImg5 from "../Assets/others5.svg";
 import otherImg6 from "../Assets/others6.svg";
-import { fetchProviders, updateProvider } from '../features/providerSlice';
+import { fetchProviders, updateProvider,changeCertifiedStatus } from '../features/providerSlice';
 
 const urlToFile = async (url, fileName) => {
   try {
@@ -101,6 +103,21 @@ const ProviderPreview = ({ providerData, providerId }) => {
 
 
   const formattedDate = new Date(providerData.created_at).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+
+
+  const handleCertificationStatusChange = (providerId, status) => {
+    dispatch(changeCertifiedStatus({ providerId, certifiedStatus: status }))
+      .unwrap()
+      .then(() => {
+        // dispatch(fetchProviders()); // Refresh providers after the status change
+        const message = status === 1 ? 'Document approved successfully' : 'Document rejected successfully';
+        toast.success(message);
+      })
+      .catch((err) => {
+        toast.error(`Failed to change status: ${err.message || err}`);
+      });
+  };
+
   return (
     <div className="p-4 min-h-screen font-poppins">
       <div className=" rounded-lg">
@@ -244,16 +261,16 @@ const ProviderPreview = ({ providerData, providerId }) => {
             <div className="p-4">
               <h2 className="font-semibold text-lg mb-2 border-b border-black font-inter">Other Information</h2>
               <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-              {providerData?.gallery?.length > 0 &&
-  providerData.gallery.map((item, index) => (
-    <img
-      key={item.id || index}  // Use item.id if available, otherwise fallback to index
-      src={item.image}  // Access the image URL from the item object
-      alt={`Other info ${index + 1}`}
-      className="rounded-lg"
-    />
-  ))
-}
+                {providerData?.gallery?.length > 0 &&
+                  providerData.gallery.map((item, index) => (
+                    <img
+                      key={item.id || index}  // Use item.id if available, otherwise fallback to index
+                      src={item.image}  // Access the image URL from the item object
+                      alt={`Other info ${index + 1}`}
+                      className="rounded-lg"
+                    />
+                  ))
+                }
 
 
               </div>
@@ -319,11 +336,28 @@ const ProviderPreview = ({ providerData, providerId }) => {
                   />
                   <p className="mt-2 text-sm text-[#616161]">{`${providerData.degree ? "Certificate" : "NO Certificate"}`}</p>
                 </div>
+
+
+              </div>
+              <div className="text-center m-2 p-2">
+                <button
+                  onClick={() => handleCertificationStatusChange(providerId, 1)} // Set certifiedStatus to 1 for "Approve"
+                  className="bg-[#0085FF] text-white text-sm px-6 py-2 me-2 rounded-lg shadow-md hover:bg-[#0072cc] transition duration-200 ease-in-out"
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => handleCertificationStatusChange(providerId, 0)} // Set certifiedStatus to 0 for "Reject"
+                  className="bg-[#c20a0a] text-white text-sm px-6 py-2 rounded-lg shadow-md hover:bg-[#cc0000] transition duration-200 ease-in-out"
+                >
+                  Reject
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

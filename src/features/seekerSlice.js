@@ -10,14 +10,16 @@ const getAuthToken = () => {
 };
 
 // Thunks for async actions
-export const fetchSeekers = createAsyncThunk('seekers/fetchSeekers', async () => {
+export const fetchSeekers = createAsyncThunk('seekers/fetchSeekers', async (query) => {
   try {
     const response = await axios.get(API_URL, {
       headers: {
         Authorization: `Bearer ${getAuthToken()}`, 
       },
+      params: {
+        query,  // Pass the query parameter
+      },
     });
-    console.log('Fetched Seekers:', response.data);
     return response.data.data;
   } catch (error) {
     console.error('Error fetching seekers:', error);

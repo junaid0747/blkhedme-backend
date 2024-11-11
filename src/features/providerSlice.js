@@ -5,21 +5,24 @@ import axios from 'axios';
 const API_URL = 'https://apiv2.blkhedme.com/api/admin/provider';
 
 // Fetching all providers
-export const fetchProviders = createAsyncThunk('provider/fetchProviders', async () => {
+export const fetchProviders = createAsyncThunk('provider/fetchProviders', async (query) => {
   const token = localStorage.getItem('authToken');
   try {
+    // Add the query parameter to the request
     const response = await axios.get(API_URL, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      params: {
+        query,  // Pass the query parameter
+      },
     });
-    console.log("Fetched Providers: ", response.data.data);
     return response.data.data;
   } catch (error) {
-    console.error('Error fetching providers:', error);
     throw error;
   }
 });
+
 
 // Adding new provider
 export const addProvider = createAsyncThunk(
@@ -126,6 +129,32 @@ export const updateProviderAvailability = createAsyncThunk(
       );
      
       return { providerId, newAvailability }; 
+    } catch (error) {
+      return rejectWithValue(error.response ? error.response.data : 'Unknown error');
+    }
+  }
+);
+
+export const changeCertifiedStatus = createAsyncThunk(
+  'change/certified/status',
+  async ({ providerId, certifiedStatus }, { rejectWithValue }) => {
+    const token = localStorage.getItem('authToken'); 
+    try {
+      const response = await axios.post(
+        `https://apiv2.blkhedme.com/api/admin/change/certified/status`,
+        {
+          provider_id: providerId,
+          is_certified: certifiedStatus,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        }
+      );
+     
+      return { providerId, certifiedStatus }; 
     } catch (error) {
       return rejectWithValue(error.response ? error.response.data : 'Unknown error');
     }
