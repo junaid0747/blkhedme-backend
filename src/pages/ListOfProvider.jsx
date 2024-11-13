@@ -12,6 +12,7 @@ import {
   deleteProvider,
   updateProvider,
   updateProviderStatus,
+  updateProviderProfessionalStatus,
   updateProviderAvailability
 } from '../features/providerSlice';
 import { fetchCategories } from '../features/categorySlice';
@@ -335,6 +336,19 @@ const ProviderList = () => {
   };
 
   // Handle Status Change Toggle
+  const handleProfessionalStatusChange = (providerId, currentStatus) => {
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    dispatch(updateProviderProfessionalStatus({ providerId, newStatus }))
+      .unwrap()
+      .then(() => {
+        dispatch(fetchProviders());
+        toast.success('Provider professional status updated successfully');
+      })
+      .catch((err) => {
+        toast.error(`Failed to change status: ${err.message || err}`);
+      });
+  };
+
   const handleStatusChange = (providerId, currentStatus) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     dispatch(updateProviderStatus({ providerId, newStatus }))
@@ -429,6 +443,7 @@ const ProviderList = () => {
               <th className="p-3">Reports</th>
               <th className="p-3">Calls</th>
               <th className="p-3">Availability</th>
+              <th className="p-3">Professional Status</th>
               <th className="p-3">Status</th>
               <th className="p-3">Actions</th>
             </tr>
@@ -498,9 +513,23 @@ const ProviderList = () => {
                     id={`status-${provider.id}`}
                     checked={provider.professional_status === 'active'}
                     onChange={() =>
-                      handleStatusChange(
+                      handleProfessionalStatusChange(
                         provider.id,
                         provider.professional_status
+                      )
+                    }
+                    className="mr-2 cursor-pointer"
+                  />
+                </td>
+                <td className="p-2">
+                  <input
+                    type="checkbox"
+                    id={`status-${provider.id}`}
+                    checked={provider.status === 'active'}
+                    onChange={() =>
+                      handleStatusChange(
+                        provider.id,
+                        provider.status
                       )
                     }
                     className="mr-2 cursor-pointer"

@@ -5,9 +5,11 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import uploadImg from "../Assets/download.svg";
 import FileUpload from "../components/FileUpload";
-import { addProvider } from "../features/providerSlice"; // Adjust the path as necessary
+import { addProvider,fetchProviders } from "../features/providerSlice"; // Adjust the path as necessary
 import { fetchCategories } from "../features/categorySlice";
 import { FaPaperclip } from 'react-icons/fa';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddNewProvider = () => {
   const dispatch = useDispatch();
@@ -106,7 +108,6 @@ const AddNewProvider = () => {
     dispatch(addProvider(formData))
       .unwrap()
       .then(() => {
-        alert("Provider added successfully!");
         // Optionally, reset the form
         setFirstName("");
         setLastName("");
@@ -126,6 +127,9 @@ const AddNewProvider = () => {
         setProfileImage(null);
         setDegree(null);
         setIdentityCard(null);
+        
+        dispatch(fetchProviders());
+        toast.success('Provider created successfully');
       })
       .catch((err) => {
         console.error("Error: ", err);
@@ -574,6 +578,7 @@ const AddNewProvider = () => {
           </div>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 };

@@ -91,6 +91,32 @@ export const updateProviderStatus = createAsyncThunk(
         `${API_URL}/status`,
         {
           provider_id: providerId,
+          status: newStatus,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        }
+      );
+      console.log('Status Update Response:', response.data);
+      return { providerId, newStatus }; 
+    } catch (error) {
+      console.error('Error updating provider status:', error.response ? error.response.data : error.message);
+      return rejectWithValue(error.response ? error.response.data : 'Unknown error');
+    }
+  }
+);
+export const updateProviderProfessionalStatus = createAsyncThunk(
+  'providers/updateProviderStatus',
+  async ({ providerId, newStatus }, { rejectWithValue }) => {
+    const token = localStorage.getItem('authToken'); 
+    try {
+      const response = await axios.post(
+        `${API_URL}/professional/status`,
+        {
+          provider_id: providerId,
           professional_status: newStatus,
         },
         {
