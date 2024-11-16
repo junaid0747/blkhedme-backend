@@ -101,7 +101,7 @@ const EditProviderModal = ({
           />
 
           {/* Area of Operation Dropdown */}
-          <select
+          {/* <select
             name="area_of_operation"
             value={formData.area_of_operation}
             onChange={handleChange}
@@ -120,10 +120,10 @@ const EditProviderModal = ({
             ) : (
               <option disabled>Loading categories...</option>
             )}
-          </select>
+          </select> */}
 
           {/* Profession Dropdown */}
-          <select
+          {/* <select
             name="profession"
             value={formData.profession}
             onChange={handleChange}
@@ -133,10 +133,10 @@ const EditProviderModal = ({
             <option value="" disabled>
               Select Profession
             </option>
-            <option value={1}>BBA</option> {/*submitting job as id*/}
+            <option value={1}>BBA</option> 
             <option value={2}>MBBS</option>
-            {/* Add more professions as needed */}
-          </select>
+           
+          </select> */}
 
           {/* Identity Card Upload */}
           <div className="mb-2 mt-4">
@@ -258,9 +258,7 @@ const ProviderList = () => {
     if (
       !formData.first_name ||
       !formData.last_name ||
-      !formData.phone ||
-      !formData.area_of_operation ||
-      !formData.profession
+      !formData.phone
     ) {
       toast.error('Please fill out all required fields.');
       return;
@@ -271,8 +269,8 @@ const ProviderList = () => {
     formDataToSend.append('last_name', formData.last_name);
     formDataToSend.append('phone', formData.phone);
     formDataToSend.append('email', formData.email);
-    formDataToSend.append('area_of_operation', formData.area_of_operation);
-    formDataToSend.append('profession', formData.profession);
+    // formDataToSend.append('area_of_operation', formData.area_of_operation);
+    // formDataToSend.append('profession', formData.profession);
 
     // Handle Identity Card
     if (file) {
