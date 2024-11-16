@@ -102,7 +102,7 @@ const ProviderPreview = ({ providerData, providerId }) => {
   };
 
 
-  const formattedDate = new Date(providerData.created_at).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+  const formattedDate = new Date(providerData?.created_at).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
 
 
   const handleCertificationStatusChange = (providerId, status) => {
@@ -189,11 +189,11 @@ const ProviderPreview = ({ providerData, providerId }) => {
               {/* Images */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                 <img
-                  src={providerData.image}
-                  alt={`${providerData.first_name} ${providerData.last_name}`}
+                  src={providerData?.image}
+                  alt={`${providerData?.first_name} ${providerData?.last_name}`}
                   className="rounded-lg"
                 />
-                <img src={providerData.identity_card
+                <img src={providerData?.identity_card
                 } alt="ID Card" className="rounded-lg" />
               </div>
             </div>
@@ -221,7 +221,7 @@ const ProviderPreview = ({ providerData, providerId }) => {
                       <div className="w-1 h-1 bg-slate-600 rounded-full inline-block mb-[2px]"></div>{" "}
                     </strong>
                     <strong className="text-[#616161] text-[12px] ml-1">
-                      {providerData.years_experience || "N/A"}
+                      {providerData?.years_experience || "N/A"}
                     </strong>
                   </p>
                   <p>
@@ -230,7 +230,7 @@ const ProviderPreview = ({ providerData, providerId }) => {
                       <div className="w-1 h-1 bg-slate-600 rounded-full inline-block mb-[2px]"></div>{" "}
                     </strong>
                     <strong className="text-[#616161] text-[12px] ml-1">
-                      {`${providerData.working_hours_from || "00:00"} - ${providerData.working_hours_till || "00:00"}`}
+                      {`${providerData?.working_hours_from || "00:00"} - ${providerData?.working_hours_till || "00:00"}`}
                     </strong>
                   </p>
                 </div>
@@ -265,7 +265,7 @@ const ProviderPreview = ({ providerData, providerId }) => {
                   providerData.gallery.map((item, index) => (
                     <img
                       key={item.id || index}  // Use item.id if available, otherwise fallback to index
-                      src={item.image}  // Access the image URL from the item object
+                      src={item?.image}  // Access the image URL from the item object
                       alt={`Other info ${index + 1}`}
                       className="rounded-lg"
                     />
@@ -319,14 +319,14 @@ const ProviderPreview = ({ providerData, providerId }) => {
               <h2 className="font-semibold text-lg mb-4 border-b font-inter border-black">Documents</h2>
               <div className="flex gap-4">
                 <div className="text-center">
-                  <Link to={providerData.degree || ""} >
+                  <Link to={providerData?.degree || ""} >
                     <img
                       src={pdfImg}
                       alt="Degree"
                       className="rounded-lg mx-auto"
                     />
                   </Link>
-                  <p className="mt-2 text-sm text-[#616161]">{`${providerData.degree ? "Degree" : "No Degree"}`}</p>
+                  <p className="mt-2 text-sm text-[#616161]">{`${providerData?.degree ? "Degree" : "No Degree"}`}</p>
                 </div>
                 <div className="text-center">
                   <img
@@ -334,7 +334,7 @@ const ProviderPreview = ({ providerData, providerId }) => {
                     alt="Certificate"
                     className="rounded-lg mx-auto"
                   />
-                  <p className="mt-2 text-sm text-[#616161]">{`${providerData.degree ? "Certificate" : "NO Certificate"}`}</p>
+                  <p className="mt-2 text-sm text-[#616161]">{`${providerData?.degree ? "Certificate" : "NO Certificate"}`}</p>
                 </div>
 
 
