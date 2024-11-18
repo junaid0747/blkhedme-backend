@@ -343,9 +343,12 @@ const ProviderList = () => {
         toast.success('Provider professional status updated successfully');
       })
       .catch((err) => {
-        toast.error(`Failed to change status: ${err.message || err}`);
+        console.log('Error in status change:', err); // Debugging
+        dispatch(fetchProviders());
+        toast.error(`Failed to change status: ${err}`); // Changed to toast.error
       });
   };
+  
 
   const handleStatusChange = (providerId, currentStatus) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';

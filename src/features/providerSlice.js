@@ -129,8 +129,9 @@ export const updateProviderProfessionalStatus = createAsyncThunk(
       console.log('Status Update Response:', response.data);
       return { providerId, newStatus }; 
     } catch (error) {
-      console.error('Error updating provider status:', error.response ? error.response.data : error.message);
-      return rejectWithValue(error.response ? error.response.data : 'Unknown error');
+
+      // console.error('Error updating provider status:', error.response ? error.response.data : error.message);
+      return rejectWithValue(error.response ? error.response.data.message : 'Unknown error');
     }
   }
 );

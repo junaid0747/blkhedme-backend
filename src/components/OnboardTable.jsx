@@ -16,7 +16,7 @@ const OnboardTable = ({ activeTab }) => {
 
   const toHandleStatusDeny = async (id) =>{
     console.log(id);
-    const url = "https://apiv2.blkhedme.com/api/admin/provider/status"
+    const url = "https://apiv2.blkhedme.com/api/admin/provider/professional/status"
     const data = {
        provider_id:id,
        professional_status:"inactive"
@@ -43,7 +43,7 @@ const OnboardTable = ({ activeTab }) => {
   }
   const toHandleStatusApproved = async (id) =>{
     console.log(id);
-    const url = "https://apiv2.blkhedme.com/api/admin/provider/status"
+    const url = "https://apiv2.blkhedme.com/api/admin/provider/professional/status"
     const data = {
        provider_id:id,
        professional_status:"active"
