@@ -250,7 +250,7 @@ const ProviderPreview = ({ providerData, providerId }) => {
                       <div className="w-1 h-1 bg-slate-600 rounded-full inline-block mb-[2px]"></div>{" "}
                     </strong>
                     <strong className="text-[#616161] text-[12px] ml-1">
-                      {providerData?.category?.title || "N/A"}
+                      {providerData?.location?.title || "N/A"}
                     </strong>
                   </p>
                 </div>

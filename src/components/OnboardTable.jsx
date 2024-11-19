@@ -12,6 +12,8 @@ const OnboardTable = ({ activeTab }) => {
   const [activePopup, setActivePopup] = useState(null);
   const [status, setstatus] = useState("active");
   const token = localStorage.getItem('authToken');
+  const [selectedRequests, setSelectedRequests] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
 
   const toHandleStatusDeny = async (id) =>{
@@ -68,6 +70,10 @@ const OnboardTable = ({ activeTab }) => {
     }
     
   }
+
+   
+
+
   // Fetching providers from the Redux store
   const { providers, loading, error } = useSelector((state) => state.providers);
 
@@ -118,19 +124,120 @@ const OnboardTable = ({ activeTab }) => {
       ? providers.filter((request) => request.professional_status !== "inactive" && request.professional_status === "pending")
       : providers.filter((request) => request.professional_status === "inactive"); // Assuming "inactive" is for denied requests
 
+
+    // Toggle individual checkbox
+    const handleCheckboxChange = (id) => {
+      setSelectedRequests((prev) =>
+        prev.includes(id)
+          ? prev.filter((requestId) => requestId !== id) // Remove if already selected
+          : [...prev, id] // Add if not selected
+      );
+    };
+  
+    // Toggle select all
+    const handleSelectAll = () => {
+      if (selectAll) {
+        setSelectedRequests([]); // Deselect all
+      } else {
+        setSelectedRequests(filteredRequests.map((request) => request.id)); // Select all
+      }
+      setSelectAll(!selectAll);
+    };
+  
+    // Approve selected
+    // API for bulk approval
+   const handleApproveSelected = async () => {
+    const url = "https://apiv2.blkhedme.com/api/admin/provider/professional/status";
+
+    try {
+      // Loop through selected IDs and approve each
+      await Promise.all(
+        selectedRequests.map(async (id) => {
+          const data = {
+            provider_id: id,
+            professional_status: "active",
+          };
+          return axios.post(url, data, {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        })
+      );
+      dispatch(fetchProviders());
+      setSelectedRequests([]);
+      setSelectAll(false);
+      console.log("Bulk approval successful");
+    } catch (err) {
+      console.log("Error in bulk approval:", err.message);
+    }
+  };
+
+  const handleDenySelected = async () => {
+    const url = "https://apiv2.blkhedme.com/api/admin/provider/professional/status";
+
+    try {
+      // Loop through selected IDs and approve each
+      await Promise.all(
+        selectedRequests.map(async (id) => {
+          const data = {
+            provider_id: id,
+            professional_status: "inactive",
+          };
+          return axios.post(url, data, {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        })
+      );
+      dispatch(fetchProviders());
+      setSelectedRequests([]);
+      setSelectAll(false);
+      console.log("Bulk deny successful");
+    } catch (err) {
+      console.log("Error in bulk approval:", err.message);
+    }
+  };
+  
   return (
     <div className="mt-4 overflow-x-auto">
+      <div className="m-3 flex justify-end">
+      <button
+        onClick={handleApproveSelected}
+        className="me-2 bg-[#0085FF] text-white text-sm px-6 py-2 rounded-lg shadow-md hover:bg-[#0072cc] transition duration-200 ease-in-out"
+        disabled={selectedRequests.length === 0}
+      >
+        Approve Selected
+      </button>
+      <button
+        onClick={handleDenySelected}
+        className="bg-[#d81a1a] text-white text-sm px-6 py-2 rounded-lg shadow-md hover:bg-[#a70808] transition duration-200 ease-in-out"
+        disabled={selectedRequests.length === 0}
+      >
+        Deny Selected
+      </button>
+      </div>
+      
       {loading ? (
         <p>Loading providers...</p>
       ) : error ? (
         <p>Error: {error}</p>
       ) : (
+        
         <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md mb-20">
           <thead>
             <tr className="bg-[#8498E0] text-white text-xs ">
               <th className="p-3 ">
                 <span className="block py-2 px-3 border-r border-gray-300">
-                  <input type="checkbox" className="h-4 w-4 rounded" />
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded"
+                  checked={selectAll}
+                  onChange={handleSelectAll}
+                />
                 </span>
               </th>
               <th className="p-0 ">
@@ -182,7 +289,12 @@ const OnboardTable = ({ activeTab }) => {
             {filteredRequests.map((request, index) => (
               <tr key={request.id} className="border-b border-gray-200 text-sm">
                 <td className="p-3 text-center">
-                  <input type="checkbox" className="h-4 w-4 rounded" />
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded"
+                  checked={selectedRequests.includes(request.id)}
+                  onChange={() => handleCheckboxChange(request.id)}
+                />
                 </td>
                 <td className="p-3 text-center">{`0${index + 1}`}</td>
                 <td className="p-3">
@@ -198,7 +310,7 @@ const OnboardTable = ({ activeTab }) => {
                 <td className="p-3 text-center ">{request.phone || "N/A"}</td>
                 <td className="p-3 text-center">{request.category?.title || "N/A"}</td>
                 <td className="p-3 text-center">
-                  {request.sub_categories_id || 'N/A'}
+                  {request?.sub_categories?.name || 'N/A'}
                 </td>
                 <td className="p-3 text-center">
                   {request.average_rating || "N/A"}

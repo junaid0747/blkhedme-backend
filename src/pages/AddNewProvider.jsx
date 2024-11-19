@@ -7,6 +7,8 @@ import uploadImg from "../Assets/download.svg";
 import FileUpload from "../components/FileUpload";
 import { addProvider,fetchProviders } from "../features/providerSlice"; // Adjust the path as necessary
 import { fetchCategories } from "../features/categorySlice";
+import { fetchLocations } from "../features/locationSlice";
+
 import { FaPaperclip } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -15,11 +17,15 @@ const AddNewProvider = () => {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.providers);
   const { categories, categoryError } = useSelector((state) => state.categories);
+  const { locations } = useSelector((state) => state.locations);
+
   const [err, setErrors] = useState({});
 
   // Fetching categories when component mounts
   useEffect(() => {
     dispatch(fetchCategories());
+    dispatch(fetchLocations());
+
   }, [dispatch]);
 
   // Form State
@@ -301,12 +307,19 @@ const AddNewProvider = () => {
                     onChange={(e) => setProfession(e.target.value)}
                     required
                   >
-                    <option value="" disabled>
+                     <option value="" disabled>
                       Select
                     </option>
-                    <option value={10}>Engineer</option> {/* Assuming job_id=10 for Engineer */}
-                    <option value={11}>Doctor</option> {/* Assuming job_id=11 for Doctor */}
-                    {/* Add more options with corresponding job_id values as needed */}
+                    {/* Dynamically populate dropdown with categories */}
+                    {categories && categories.length > 0 ? (
+                      categories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.title}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>Loading categories...</option>
+                    )}
                   </select>
                 </div>
                 <div className="flex flex-col w-full">
@@ -325,10 +338,10 @@ const AddNewProvider = () => {
                       Select
                     </option>
                     {/* Dynamically populate dropdown with categories */}
-                    {categories && categories.length > 0 ? (
-                      categories.map((category) => (
-                        <option key={category.id} value={category.id}>
-                          {category.title}
+                    {locations && locations.length > 0 ? (
+                      locations.map((location) => (
+                        <option key={location.id} value={location.id}>
+                          {location.title}
                         </option>
                       ))
                     ) : (
