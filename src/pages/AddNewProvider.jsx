@@ -5,7 +5,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import uploadImg from "../Assets/download.svg";
 import FileUpload from "../components/FileUpload";
-import { addProvider,fetchProviders } from "../features/providerSlice"; // Adjust the path as necessary
+import { addProvider, fetchProviders } from "../features/providerSlice"; // Adjust the path as necessary
 import { fetchCategories } from "../features/categorySlice";
 import { fetchLocations } from "../features/locationSlice";
 
@@ -51,6 +51,8 @@ const AddNewProvider = () => {
   const [identityCard, setIdentityCard] = useState(null);
   const identityInputRef = useRef(null);
   const degreeInputRef = useRef(null);
+  const [selectedIdentityFileName, setSelectedIdentityFileName] = useState("");
+  const [selectedDegreeFileName, setSelectedDegreeFileName] = useState("");
 
   // Image Upload Handlers
   const handleImageUpload = (e, setImage) => {
@@ -66,10 +68,23 @@ const AddNewProvider = () => {
 
   const handleIdentityCardUpload = (e) => {
     handleImageUpload(e, setIdentityCard);
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      setSelectedIdentityFileName(file.name);
+    } else {
+      setSelectedIdentityFileName("");
+    }
+
   };
 
   const handleDegreeUpload = (e) => {
     handleImageUpload(e, setDegree);
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      setSelectedDegreeFileName(file.name);
+    } else {
+      setSelectedDegreeFileName("");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -97,7 +112,7 @@ const AddNewProvider = () => {
     formData.append("name_of_degree", degreeName);
     formData.append("password", password);
     formData.append("confirm_password", confirmPassword);
-    formData.append('username',username);
+    formData.append('username', username);
 
     // Append images (profile image, degree, identity card)
     if (profileImage) {
@@ -133,7 +148,7 @@ const AddNewProvider = () => {
         setProfileImage(null);
         setDegree(null);
         setIdentityCard(null);
-        
+
         dispatch(fetchProviders());
         toast.success('Provider created successfully');
       })
@@ -211,6 +226,15 @@ const AddNewProvider = () => {
                       onChange={(e) => setFirstName(e.target.value)}
                       required
                     />
+                    {error?.message?.first_name && (
+                      <div className="text-red-500 mt-2">
+                        <ul>
+                          {error.message.first_name.map((msg, index) => (
+                            <li key={index}>{msg}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                   <div className="flex flex-col w-full">
                     <label htmlFor="lastName" className="mb-1">
@@ -226,6 +250,15 @@ const AddNewProvider = () => {
                       onChange={(e) => setLastName(e.target.value)}
                       required
                     />
+                    {error?.message?.last_name && (
+                      <div className="text-red-500 mt-2">
+                        <ul>
+                          {error.message.last_name.map((msg, index) => (
+                            <li key={index}>{msg}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -243,7 +276,16 @@ const AddNewProvider = () => {
                       containerClass="border rounded-md w-full"
                       required
                     />
-                    {err.phone && <p className="text-red-500 text-sm">{err.phone}</p>}
+                    {/* {err.phone && <p className="text-red-500 text-sm">{err.phone}</p>} */}
+                    {error?.message?.phone && (
+                      <div className="text-red-500 mt-2">
+                        <ul>
+                          {error.message.phone.map((msg, index) => (
+                            <li key={index}>{msg}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                   <div className="flex flex-col w-full">
                     <label htmlFor="email" className="mb-1">
@@ -281,11 +323,20 @@ const AddNewProvider = () => {
                     className={`border p-2 rounded-md w-full ${err.username ? 'border-red-500' : ''}`}
                   />
                   {err.username && <p className="text-red-500 text-sm">{err.username}</p>}
+                  {error?.message?.username && (
+                      <div className="text-red-500 mt-2">
+                        <ul>
+                          {error.message.username.map((msg, index) => (
+                            <li key={index}>{msg}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                 </div>
               </form>
             </div>
           </div>
-        </div> 
+        </div>
 
         {/* Professional Information */}
         <div className="mt-6">
@@ -307,7 +358,7 @@ const AddNewProvider = () => {
                     onChange={(e) => setProfession(e.target.value)}
                     required
                   >
-                     <option value="" disabled>
+                    <option value="" disabled>
                       Select
                     </option>
                     {/* Dynamically populate dropdown with categories */}
@@ -321,6 +372,15 @@ const AddNewProvider = () => {
                       <option disabled>Loading categories...</option>
                     )}
                   </select>
+                  {error?.message?.profession && (
+                      <div className="text-red-500 mt-2">
+                        <ul>
+                          {error.message.profession.map((msg, index) => (
+                            <li key={index}>{msg}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                 </div>
                 <div className="flex flex-col w-full">
                   <label htmlFor="areaOfOperation" className="mb-1">
@@ -345,9 +405,18 @@ const AddNewProvider = () => {
                         </option>
                       ))
                     ) : (
-                      <option disabled>Loading categories...</option>
+                      <option disabled>Loading locations...</option>
                     )}
                   </select>
+                  {error?.message?.area_of_operation && (
+                      <div className="text-red-500 mt-2">
+                        <ul>
+                          {error.message.area_of_operation.map((msg, index) => (
+                            <li key={index}>{msg}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                 </div>
               </div>
               <div className="flex flex-col md:flex-row gap-4">
@@ -479,7 +548,7 @@ const AddNewProvider = () => {
                     className="border-dashed border-2 border-gray-400 p-2 rounded-md w-full cursor-pointer"
                     onClick={() => identityInputRef.current.click()} // Trigger file input click
                   >
-                    <span className="text-gray-400">Upload your Identity</span>
+                    <span className="text-gray-400">  {selectedIdentityFileName || "Upload your Identity"}</span>
                     <FaPaperclip className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                   </div>
                   <input
@@ -499,7 +568,7 @@ const AddNewProvider = () => {
                     className="border-dashed border-2 border-gray-400 p-2 rounded-md w-full cursor-pointer"
                     onClick={() => degreeInputRef.current.click()} // Trigger file input click
                   >
-                    <span className="text-gray-400">Upload your Degree</span>
+                    <span className="text-gray-400">{selectedDegreeFileName || "Upload your Degree"}</span>
                     <FaPaperclip className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                   </div>
                   <input
@@ -540,6 +609,15 @@ const AddNewProvider = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
+                   {error?.message?.password && (
+                      <div className="text-red-500 mt-2">
+                        <ul>
+                          {error.message.password.map((msg, index) => (
+                            <li key={index}>{msg}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                 </div>
                 <div className="flex flex-col w-full">
                   <label htmlFor="confirmPassword" className="mb-1">
@@ -585,11 +663,12 @@ const AddNewProvider = () => {
         </div>
 
         {/* Error Message */}
-        {error && (
+        {/* {error && (
           <div className="text-red-500 mt-4">
             {typeof error === "string" ? error : "An error occurred."}
           </div>
-        )}
+        )} */}
+
       </div>
       <ToastContainer />
     </div>
