@@ -4,7 +4,9 @@ import { BsThreeDots } from "react-icons/bs";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import axios from "axios";
 import notificationImg from "../Assets/notificationImg.png"; // Default image for providers without one
-import { fetchProviders, updateProvider } from "../features/providerSlice"; // Assuming this is the correct path
+import { fetchProviders, updateProvider, updateProviderStatus } from "../features/providerSlice"; // Assuming this is the correct path
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const OnboardTable = ({ activeTab }) => {
   const dispatch = useDispatch();
@@ -70,9 +72,6 @@ const OnboardTable = ({ activeTab }) => {
     }
     
   }
-
-   
-
 
   // Fetching providers from the Redux store
   const { providers, loading, error } = useSelector((state) => state.providers);
@@ -201,6 +200,19 @@ const OnboardTable = ({ activeTab }) => {
       console.log("Error in bulk approval:", err.message);
     }
   };
+
+  const handleStatusChange = (providerId, currentStatus) => {
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    dispatch(updateProviderStatus({ providerId, newStatus }))
+      .unwrap()
+      .then(() => {
+        dispatch(fetchProviders());
+        toast.success('Provider status updated successfully');
+      })
+      .catch((err) => {
+        toast.error(`Failed to change status: ${err.message || err}`);
+      });
+  };
   
   return (
     <div className="mt-4 overflow-x-auto">
@@ -280,6 +292,11 @@ const OnboardTable = ({ activeTab }) => {
                   City
                 </span>
               </th>
+              <th className="p-0 ">
+                <span className="block py-2 px-3 border-r border-gray-300">
+                  status
+                </span>
+              </th>
               <th className="p-0">
                 <span className="block py-2 px-3">Actions</span>
               </th>
@@ -320,6 +337,20 @@ const OnboardTable = ({ activeTab }) => {
                    {request.professional_status || "N/A"}
                 </td>
                 <td className="p-3 text-center">{request.city || "N/A"}</td>
+                <td className="p-2">
+                  <input
+                    type="checkbox"
+                    id={`status-${request.id}`}
+                    checked={request.status === 'active'}
+                    onChange={() =>
+                      handleStatusChange(
+                        request.id,
+                        request.status
+                      )
+                    }
+                    className="mr-2 cursor-pointer"
+                  />
+                </td>
                 <td className="relative p-2 md:p-4">
                   <BsThreeDots
                     className="h-5 w-5 text-[#707070] ml-4 cursor-pointer"
@@ -357,6 +388,7 @@ const OnboardTable = ({ activeTab }) => {
           </tbody>
         </table>
       )}
+       <ToastContainer />
     </div>
   );
 };
