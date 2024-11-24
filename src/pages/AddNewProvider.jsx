@@ -53,6 +53,9 @@ const AddNewProvider = () => {
   const degreeInputRef = useRef(null);
   const [selectedIdentityFileName, setSelectedIdentityFileName] = useState("");
   const [selectedDegreeFileName, setSelectedDegreeFileName] = useState("");
+  const [subcategories, setSubcategories] = useState([]); // For the selected category's subcategories
+  const [selectedSubcategory, setSelectedSubcategory] = useState(""); // Selected subcategory
+
 
   // Image Upload Handlers
   const handleImageUpload = (e, setImage) => {
@@ -104,7 +107,7 @@ const AddNewProvider = () => {
     formData.append("email", email);
     formData.append("profession", profession);
     formData.append("area_of_operation", areaOfOperation);
-    formData.append("years_of_experience", yearsExperience);
+    formData.append("subcategory", selectedSubcategory);
     formData.append("working_hours_from", workingHoursFrom);
     formData.append("working_hours_till", workingHoursTill);
     formData.append("identity_type", idType);
@@ -137,7 +140,7 @@ const AddNewProvider = () => {
         setUsername("");
         setProfession("");
         setAreaOfOperation("");
-        setYearsExperience("");
+        setSelectedSubcategory("");
         setWorkingHoursFrom("");
         setWorkingHoursTill("");
         setIdType("");
@@ -157,6 +160,23 @@ const AddNewProvider = () => {
         setErrors(err.payload || {});
       });
   };
+
+  const handleCategoryChange = (e) => {
+    const categoryId = e.target.value;
+    setProfession(categoryId);
+
+    // Find the selected category from the categories array
+    const selectedCategory = categories.find(
+      (category) => category.id === parseInt(categoryId)
+    );
+
+    // Set subcategories or clear if none exist
+    setSubcategories(selectedCategory?.sub_category || []);
+    setSelectedSubcategory(""); // Reset subcategory selection
+  };
+
+
+
   return (
     <div className="p-4 max-w-5xl mx-auto font-poppins">
       <h1 className="mb-2 font-medium">Add New Provider</h1>
@@ -324,14 +344,14 @@ const AddNewProvider = () => {
                   />
                   {err.username && <p className="text-red-500 text-sm">{err.username}</p>}
                   {error?.message?.username && (
-                      <div className="text-red-500 mt-2">
-                        <ul>
-                          {error.message.username.map((msg, index) => (
-                            <li key={index}>{msg}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                    <div className="text-red-500 mt-2">
+                      <ul>
+                        {error.message.username.map((msg, index) => (
+                          <li key={index}>{msg}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </form>
             </div>
@@ -355,7 +375,7 @@ const AddNewProvider = () => {
                     id="profession"
                     className="border p-2 rounded-md w-full"
                     value={profession}
-                    onChange={(e) => setProfession(e.target.value)}
+                    onChange={handleCategoryChange}
                     required
                   >
                     <option value="" disabled>
@@ -373,14 +393,14 @@ const AddNewProvider = () => {
                     )}
                   </select>
                   {error?.message?.profession && (
-                      <div className="text-red-500 mt-2">
-                        <ul>
-                          {error.message.profession.map((msg, index) => (
-                            <li key={index}>{msg}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                    <div className="text-red-500 mt-2">
+                      <ul>
+                        {error.message.profession.map((msg, index) => (
+                          <li key={index}>{msg}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-col w-full">
                   <label htmlFor="areaOfOperation" className="mb-1">
@@ -409,33 +429,41 @@ const AddNewProvider = () => {
                     )}
                   </select>
                   {error?.message?.area_of_operation && (
-                      <div className="text-red-500 mt-2">
-                        <ul>
-                          {error.message.area_of_operation.map((msg, index) => (
-                            <li key={index}>{msg}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                    <div className="text-red-500 mt-2">
+                      <ul>
+                        {error.message.area_of_operation.map((msg, index) => (
+                          <li key={index}>{msg}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex flex-col w-full">
-                  <label htmlFor="experience" className="mb-1">
-                    Years of Experience
-                  </label>
-                  <input
-                    type="number"
-                    name="experience"
-                    id="experience"
-                    placeholder="Years of Experience"
-                    className="border p-2 rounded-md w-full"
-                    value={yearsExperience}
-                    onChange={(e) => setYearsExperience(e.target.value)}
-                    min="0"
-                    required
-                  />
-                </div>
+             
+                  <div className="flex flex-col w-full ">
+                  <label htmlFor="subcategory" className="mb-1">
+                      Subcategory
+                    </label>
+                      <select
+                        name="subcategory"
+                        id="subcategory"
+                        className="border p-2 rounded-md w-full"
+                        value={selectedSubcategory}
+                        onChange={(e) => setSelectedSubcategory(e.target.value)}
+                        required
+                      >
+                        <option value="" disabled>
+                          Select
+                        </option>
+                        {subcategories.map((subcategory) => (
+                          <option key={subcategory.id} value={subcategory.id}>
+                            {subcategory.name}
+                          </option>
+                        ))}
+                      </select>
+                  </div>
+               
                 <div className="flex flex-col w-full">
                   <label htmlFor="workingHours" className="mb-1">
                     Working Hours
@@ -609,15 +637,15 @@ const AddNewProvider = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
-                   {error?.message?.password && (
-                      <div className="text-red-500 mt-2">
-                        <ul>
-                          {error.message.password.map((msg, index) => (
-                            <li key={index}>{msg}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                  {error?.message?.password && (
+                    <div className="text-red-500 mt-2">
+                      <ul>
+                        {error.message.password.map((msg, index) => (
+                          <li key={index}>{msg}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-col w-full">
                   <label htmlFor="confirmPassword" className="mb-1">
