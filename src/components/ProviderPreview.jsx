@@ -328,14 +328,14 @@ const ProviderPreview = ({ providerData, providerId }) => {
                   </Link>
                   <p className="mt-2 text-sm text-[#616161]">{`${providerData?.degree ? "Degree" : "No Degree"}`}</p>
                 </div>
-                <div className="text-center">
+                {/* <div className="text-center">
                   <img
                     src={pdfImg}
                     alt="Certificate"
                     className="rounded-lg mx-auto"
                   />
                   <p className="mt-2 text-sm text-[#616161]">{`${providerData?.degree ? "Certificate" : "NO Certificate"}`}</p>
-                </div>
+                </div> */}
 
 
               </div>
