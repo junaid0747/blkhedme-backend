@@ -13,7 +13,7 @@ import otherImg3 from "../Assets/others3.svg";
 import otherImg4 from "../Assets/others4.svg";
 import otherImg5 from "../Assets/others5.svg";
 import otherImg6 from "../Assets/others6.svg";
-import { fetchProviders, updateProvider,changeCertifiedStatus } from '../features/providerSlice';
+import { fetchProviders, updateProvider, changeCertifiedStatus, submitFeatureDates } from '../features/providerSlice';
 
 const urlToFile = async (url, fileName) => {
   try {
@@ -43,19 +43,21 @@ const ProviderPreview = ({ providerData, providerId }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const dispatch = useDispatch();
+  const [featureStartDate, setFeatureStartDate] = useState('');
+  const [featureEndDate, setFeatureEndDate] = useState('');
+
 
   // Fetch provider information when the component mounts
+  const fetchProviderDetails = async () => {
+    try {
+      const provider = await dispatch(fetchProviders(providerId)).unwrap(); // Assuming fetchProviders returns a single provider's data
+      setProviderInformation(provider); // Renamed here
+    } catch (error) {
+      toast.error("Failed to fetch provider information.");
+      console.error("Error fetching provider information:", error);
+    }
+  };
   useEffect(() => {
-    const fetchProviderDetails = async () => {
-      try {
-        const provider = await dispatch(fetchProviders(providerId)).unwrap(); // Assuming fetchProviders returns a single provider's data
-        setProviderInformation(provider); // Renamed here
-      } catch (error) {
-        toast.error("Failed to fetch provider information.");
-        console.error("Error fetching provider information:", error);
-      }
-    };
-
     fetchProviderDetails();
   }, [dispatch, providerId]);
 
@@ -117,6 +119,24 @@ const ProviderPreview = ({ providerData, providerId }) => {
         toast.error(`Failed to change status: ${err.message || err}`);
       });
   };
+  const handleFormSubmit = (providerId, startDate, endDate) => {
+    const data = {
+      providerId,
+      feature_start_date: startDate,
+      feature_end_date: endDate,
+    };
+
+    dispatch(submitFeatureDates(data))
+      .unwrap()
+      .then(() => {
+        toast.success('Feature dates submitted successfully');
+        fetchProviderDetails(); // Refresh provider details after submission
+      })
+      .catch((err) => {
+        toast.error(`Failed to submit feature dates: ${err.message || err}`);
+      });
+  };
+
 
   return (
     <div className="p-4 min-h-screen font-poppins">
@@ -353,6 +373,68 @@ const ProviderPreview = ({ providerData, providerId }) => {
                   Reject
                 </button>
               </div>
+            </div>
+            <div className="bg-gray-50 p-4 border rounded-lg shadow-md">
+              <h2 className="font-semibold text-lg mb-4 border-b font-inter border-black">Feature</h2>
+              <div className="flex gap-4">
+                <div className="text-center">
+
+                </div>
+                <div className="text-center">
+                </div>
+
+
+              </div>
+              <div className="text-center m-2 p-2">
+                {/* Conditionally render form only if is_featured is not 1 */}
+                {providerData?.is_featured !== 1 ? (
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleFormSubmit(providerId, featureStartDate, featureEndDate);
+                    }}
+                    className="flex items-center justify-center space-x-4"
+                  >
+                    {/* Feature Start Date */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Feature Start Date
+                      </label>
+                      <input
+                        type="date"
+                        value={featureStartDate}
+                        onChange={(e) => setFeatureStartDate(e.target.value)}
+                        className="mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0085FF] focus:border-[#0085FF] w-full"
+                        required
+                      />
+                      <label className="block text-sm font-medium text-gray-700">
+                        Feature End Date
+                      </label>
+                      <input
+                        type="date"
+                        value={featureEndDate}
+                        onChange={(e) => setFeatureEndDate(e.target.value)}
+                        className="mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0085FF] focus:border-[#0085FF] w-full"
+                        required
+                      />
+                      <button
+                        type="submit"
+                        className="mt-2 bg-green-500 text-white text-sm px-6 py-2 rounded-lg shadow-md hover:bg-green-600 transition duration-200 ease-in-out self-end"
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <p className="text-green-600 text-sm mt-2">
+                    Your feature is currently activated.
+                  </p>
+                )}
+              </div>
+
+
+
+
             </div>
           </div>
         </div>
