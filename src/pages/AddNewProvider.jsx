@@ -36,12 +36,12 @@ const AddNewProvider = () => {
   const [username, setUsername] = useState("");
   const [profession, setProfession] = useState("");
   const [areaOfOperation, setAreaOfOperation] = useState("");
-  const [yearsExperience, setYearsExperience] = useState("");
-  const [workingHoursFrom, setWorkingHoursFrom] = useState("");
-  const [workingHoursTill, setWorkingHoursTill] = useState("");
-  const [idType, setIdType] = useState("");
-  const [identityNumber, setIdentityNumber] = useState("");
-  const [degreeName, setDegreeName] = useState("");
+  // const [yearsExperience, setYearsExperience] = useState("");
+  // const [workingHoursFrom, setWorkingHoursFrom] = useState("");
+  // const [workingHoursTill, setWorkingHoursTill] = useState("");
+  // const [idType, setIdType] = useState("");
+  // const [identityNumber, setIdentityNumber] = useState("");
+  // const [degreeName, setDegreeName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -108,11 +108,11 @@ const AddNewProvider = () => {
     formData.append("profession", profession);
     formData.append("area_of_operation", areaOfOperation);
     formData.append("subcategory", selectedSubcategory);
-    formData.append("working_hours_from", workingHoursFrom);
-    formData.append("working_hours_till", workingHoursTill);
-    formData.append("identity_type", idType);
-    formData.append("identity_number", identityNumber);
-    formData.append("name_of_degree", degreeName);
+    // formData.append("working_hours_from", workingHoursFrom);
+    // formData.append("working_hours_till", workingHoursTill);
+    // formData.append("identity_type", idType);
+    // formData.append("identity_number", identityNumber);
+    // formData.append("name_of_degree", degreeName);
     formData.append("password", password);
     formData.append("confirm_password", confirmPassword);
     formData.append('username', username);
@@ -141,11 +141,11 @@ const AddNewProvider = () => {
         setProfession("");
         setAreaOfOperation("");
         setSelectedSubcategory("");
-        setWorkingHoursFrom("");
-        setWorkingHoursTill("");
-        setIdType("");
-        setIdentityNumber("");
-        setDegreeName("");
+        // setWorkingHoursFrom("");
+        // setWorkingHoursTill("");
+        // setIdType("");
+        // setIdentityNumber("");
+        // setDegreeName("");
         setPassword("");
         setConfirmPassword("");
         setProfileImage(null);
@@ -464,7 +464,7 @@ const AddNewProvider = () => {
                       </select>
                   </div>
                
-                <div className="flex flex-col w-full">
+                {/* <div className="flex flex-col w-full">
                   <label htmlFor="workingHours" className="mb-1">
                     Working Hours
                   </label>
@@ -494,7 +494,7 @@ const AddNewProvider = () => {
                       required
                     />
                   </div>
-                </div>
+                </div> */}
               </div>
             </form>
           </div>
@@ -507,67 +507,66 @@ const AddNewProvider = () => {
           </h1>
           <div className="w-full">
             <form action="#" className="space-y-4 p-4 w-full text-sm" onSubmit={handleSubmit}>
-              <div className="flex flex-col md:flex-row gap-4 mb-8">
-                <div className="flex gap-4 w-full flex-col md:flex-row">
-                  <div className="flex flex-col">
-                    <label htmlFor="idType" className="mb-1">
-                      Identity Type
+                {/* <div className="flex flex-col md:flex-row gap-4 mb-8">
+                  <div className="flex gap-4 w-full flex-col md:flex-row">
+                    <div className="flex flex-col">
+                      <label htmlFor="idType" className="mb-1">
+                        Identity Type
+                      </label>
+                      <select
+                        name="idType"
+                        id="idType"
+                        className="border p-2 rounded-md"
+                        value={idType}
+                        onChange={(e) => setIdType(e.target.value)}
+                        required
+                      >
+                        <option value="" disabled>
+                          Select
+                        </option>
+                        <option value="NationalId">National ID</option>
+                        <option value="NationalPassport">National Passport</option>
+                        <option value="DrivingLicense">Driver License</option>
+                        <option value="TradeId">Trade ID</option>
+                      </select>
+                    </div>
+                    <div className="flex flex-col">
+                      <label htmlFor="identityNumber" className="mb-1">
+                        Identity Number
+                      </label>
+                      <input
+                        type="text"
+                        name="identityNumber"
+                        id="identityNumber"
+                        placeholder="Identity Number"
+                        className="border p-2 rounded-md"
+                        value={identityNumber}
+                        onChange={(e) => setIdentityNumber(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col w-full">
+                    <label htmlFor="nameOfDegree" className="mb-1">
+                      Name of the Degree
                     </label>
+
                     <select
-                      name="idType"
-                      id="idType"
-                      className="border p-2 rounded-md"
-                      value={idType}
-                      onChange={(e) => setIdType(e.target.value)}
+                      name="nameOfDegree"
+                      id="nameOfDegree"
+                      className="border p-2 rounded-md w-full"
+                      value={degreeName}
+                      onChange={(e) => setDegreeName(e.target.value)}
                       required
                     >
                       <option value="" disabled>
                         Select
                       </option>
-                      <option value="NationalId">National ID</option>
-                      <option value="NationalPassport">National Passport</option>
-                      <option value="DrivingLicense">Driver License</option>
-                      <option value="TradeId">Trade ID</option>
+                      <option value="BBA">BBA</option>
+                      <option value="MBA">MBA</option>
                     </select>
                   </div>
-                  <div className="flex flex-col">
-                    <label htmlFor="identityNumber" className="mb-1">
-                      Identity Number
-                    </label>
-                    <input
-                      type="text"
-                      name="identityNumber"
-                      id="identityNumber"
-                      placeholder="Identity Number"
-                      className="border p-2 rounded-md"
-                      value={identityNumber}
-                      onChange={(e) => setIdentityNumber(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="flex flex-col w-full">
-                  <label htmlFor="nameOfDegree" className="mb-1">
-                    Name of the Degree
-                  </label>
-
-                  <select
-                    name="nameOfDegree"
-                    id="nameOfDegree"
-                    className="border p-2 rounded-md w-full"
-                    value={degreeName}
-                    onChange={(e) => setDegreeName(e.target.value)}
-                    required
-                  >
-                    <option value="" disabled>
-                      Select
-                    </option>
-                    <option value="BBA">BBA</option>
-                    <option value="MBA">MBA</option>
-                    {/* Add more options as needed */}
-                  </select>
-                </div>
-              </div>
+                </div> */}
 
               <div className="flex flex-col md:flex-row gap-4">
                 {/* Upload Identity */}
