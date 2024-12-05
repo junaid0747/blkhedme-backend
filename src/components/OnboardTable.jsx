@@ -7,6 +7,7 @@ import notificationImg from "../Assets/notificationImg.png"; // Default image fo
 import { fetchProviders, updateProvider, updateProviderStatus } from "../features/providerSlice"; // Assuming this is the correct path
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import DownloadCsv from "./DownloadCsv";
 
 const OnboardTable = ({ activeTab }) => {
   const dispatch = useDispatch();
@@ -217,6 +218,7 @@ const OnboardTable = ({ activeTab }) => {
   return (
     <div className="mt-4 overflow-x-auto">
       <div className="m-3 flex justify-end">
+      <DownloadCsv data={filteredRequests} fileName="onboarding-requests" />
       <button
         onClick={handleApproveSelected}
         className="me-2 bg-[#0085FF] text-white text-sm px-6 py-2 rounded-lg shadow-md hover:bg-[#0072cc] transition duration-200 ease-in-out"

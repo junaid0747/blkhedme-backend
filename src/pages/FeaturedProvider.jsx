@@ -13,6 +13,7 @@ import {
 } from '../features/providerSlice';
 import { fetchCategories } from '../features/categorySlice';
 import notificationImg from '../Assets/notificationImg.png';
+import DownloadCsv from '../components/DownloadCsv';
 
 // Modal Component for Editing Provider
 const EditProviderModal = ({
@@ -317,19 +318,37 @@ const FeaturedProvider = () => {
   };
 
   // Filter Providers Based on Status
+  // const getFilteredProviders = () => {
+  //   if (filterType === 'active') {
+  //     return providers.filter(
+  //       (provider) => provider.professional_status === 'active'
+  //     );
+  //   }
+  //   if (filterType === 'inactive') {
+  //     return providers.filter(
+  //       (provider) => provider.professional_status !== 'active'
+  //     );
+  //   }
+  //   return providers;
+  // };
+
   const getFilteredProviders = () => {
-    if (filterType === 'active') {
-      return providers.filter(
-        (provider) => provider.professional_status === 'active'
-      );
-    }
-    if (filterType === 'inactive') {
-      return providers.filter(
-        (provider) => provider.professional_status !== 'active'
-      );
-    }
-    return providers;
+    return providers.filter((provider) => {
+      // Active providers with certification
+      if (filterType === 'active') {
+        return provider.is_certified === 'active' && provider.is_featured === 1;
+      }
+  
+      // Inactive providers (professional_status !== 'active') with certification
+      if (filterType === 'inactive') {
+        return provider.professional_status !== 'active' && provider.is_featured === 1;
+      }
+  
+      // All providers with certification
+      return provider.is_featured === 1;
+    });
   };
+  
 
   // Handle Status Change Toggle
   const handleStatusChange = (providerId, currentStatus) => {
@@ -374,6 +393,7 @@ const FeaturedProvider = () => {
     <div className=" font-poppins">
       {/* Add New Provider Button */}
       <div className="flex justify-end pt-4 pr-4 w-full py-2">
+      <DownloadCsv data={getFilteredProviders()} fileName="featured" />
         <button
           className="bg-[#0085FF] text-white text-sm px-6 py-2 rounded-lg shadow-md hover:bg-[#0072cc] transition duration-200 ease-in-out"
           onClick={() => navigate('/add-new-provider')}

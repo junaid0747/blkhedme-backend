@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchSeekers } from "../features/seekerSlice";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import DownloadCsv from "../components/DownloadCsv";
 const ListOfSeekers = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -58,6 +59,7 @@ const ListOfSeekers = () => {
         </div>
 
         <div className="flex justify-end mt-6 mb-2">
+        <DownloadCsv data={filteredSeekers} fileName="seekers" />
           <button
             className="flex items-center bg-[#0085FF] text-white px-8 py-2 rounded-md"
             onClick={() => navigate("/add-new-seeker")}

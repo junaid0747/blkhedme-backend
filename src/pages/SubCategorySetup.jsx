@@ -8,6 +8,7 @@ import {
   editSubCategory,
   toggleFeatured,
 } from "../features/subCategorySlice";
+import DownloadCsv from "../components/DownloadCsv";
 
 const SubCategorySetup = () => {
   const dispatch = useDispatch();
@@ -92,8 +93,9 @@ const SubCategorySetup = () => {
   return (
     <>
       <div className="space-y-2 font-poppins">
-        <div className="flex items-center justify-between">
-          <h1 className="font-semibold">Sub Category Setup</h1>
+      <h1 className="font-semibold">Sub Category Setup</h1>
+        <div className="flex items-center justify-end">
+        <DownloadCsv data={subCategories} fileName="Subcategories" />
           <button
             className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md"
             onClick={() => navigate("/add-new-sub-category")}

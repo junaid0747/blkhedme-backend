@@ -17,6 +17,7 @@ import {
 } from '../features/providerSlice';
 import { fetchCategories } from '../features/categorySlice';
 import notificationImg from '../Assets/notificationImg.png';
+import DownloadCsv from '../components/DownloadCsv';
 
 // Modal Component for Editing Provider
 const EditProviderModal = ({
@@ -405,6 +406,9 @@ const ProviderList = () => {
     <div className=" font-poppins">
       {/* Add New Provider Button */}
       <div className="flex justify-end pt-4 pr-4 w-full">
+      <DownloadCsv data={getFilteredProviders()} fileName="providers" />
+
+     
         <button
           className="bg-[#0085FF] text-white text-sm px-6 py-2 rounded-lg shadow-md hover:bg-[#0072cc] transition duration-200 ease-in-out"
           onClick={() => navigate('/add-new-provider')}

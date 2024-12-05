@@ -7,6 +7,7 @@ import {
   deleteCategory,
   updateCategory,
 } from "../features/categorySlice"; 
+import DownloadCsv from "../components/DownloadCsv";
 
 const CategoryTable = () => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
@@ -61,8 +62,9 @@ const CategoryTable = () => {
   return (
     <>
       <div className="space-y-2 font-poppins">
-        <div className="flex items-center justify-between">
-          <h1 className="font-semibold">Category Setup</h1>
+        <div className="flex items-center justify-end">
+          
+          <DownloadCsv data={filteredCategories} fileName="categories" />
           <button
             className="bg-blue-500 text-white px-3 md:px-6 py-2 rounded-lg shadow-md"
             onClick={() => navigate("/add-new-category")}
