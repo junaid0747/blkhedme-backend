@@ -435,7 +435,7 @@ const ProviderList = () => {
       </div>
 
       {/* Providers Table */}
-      <div className="w-full overflow-x-auto px-1">
+      <div className="w-full overflow-x-auto max-h-[500px] px-1">
         <table className="bg-white shadow-md rounded-lg text-sm table-auto w-full">
           <thead>
             <tr className="text-center bg-[#2b4dc9] text-white text-xs h-14">

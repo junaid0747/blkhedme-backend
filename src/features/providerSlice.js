@@ -228,6 +228,30 @@ export const submitFeatureDates = createAsyncThunk(
   }
 );
 
+export const submitSubscriptionDates = createAsyncThunk(
+  'provider/submitSubscriptionDates',
+  async ({ providerId, subscription_start_date, subscription_end_date }, thunkAPI) => {
+    const token = localStorage.getItem('authToken');
+    try {
+      const response = await axios.post(`${API_URL}/submit-subscription-dates`, {
+        providerId,
+        subscription_start_date,
+        subscription_end_date,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      }
+    );
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const providerSlice = createSlice({
   name: 'providers',
   initialState: {
@@ -325,6 +349,16 @@ const providerSlice = createSlice({
         state.status = 'succeeded';
       })
       .addCase(submitFeatureDates.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+      .addCase(submitSubscriptionDates.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(submitSubscriptionDates.fulfilled, (state) => {
+        state.status = 'succeeded';
+      })
+      .addCase(submitSubscriptionDates.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       });

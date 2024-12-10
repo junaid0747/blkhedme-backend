@@ -13,7 +13,7 @@ import otherImg3 from "../Assets/others3.svg";
 import otherImg4 from "../Assets/others4.svg";
 import otherImg5 from "../Assets/others5.svg";
 import otherImg6 from "../Assets/others6.svg";
-import { fetchProviders, updateProvider, changeCertifiedStatus, submitFeatureDates } from '../features/providerSlice';
+import { fetchProviders, updateProvider, changeCertifiedStatus, submitFeatureDates, submitSubscriptionDates } from '../features/providerSlice';
 
 const urlToFile = async (url, fileName) => {
   try {
@@ -45,7 +45,8 @@ const ProviderPreview = ({ providerData, providerId }) => {
   const dispatch = useDispatch();
   const [featureStartDate, setFeatureStartDate] = useState('');
   const [featureEndDate, setFeatureEndDate] = useState('');
-
+  const [subscriptionStartDate, setSubscriptionStartDate] = useState('');
+  const [subscriptionEndDate, setSubscriptionEndDate] = useState('');
 
   // Fetch provider information when the component mounts
   const fetchProviderDetails = async () => {
@@ -137,6 +138,39 @@ const ProviderPreview = ({ providerData, providerId }) => {
       });
   };
 
+  const handleSubscriptionFormSubmit = (providerId, startDate, endDate) => {
+    const data = {
+      providerId,
+      subscription_start_date: startDate,
+      subscription_end_date: endDate,
+    };
+
+    dispatch(submitSubscriptionDates(data))
+      .unwrap()
+      .then(() => {
+        toast.success('Subscription dates submitted successfully');
+        fetchProviderDetails(); // Refresh provider details after submission
+      })
+      .catch((err) => {
+        toast.error(`Failed to submit Subscription dates: ${err.message || err}`);
+      });
+  };
+
+
+  const endDate = providerData?.subscription_end_date;
+  const startDate = providerData?.subscription_start_date;
+
+  const calculateDaysLeft = (endDate) => {
+    const today = new Date();
+    const end = new Date(endDate);
+    const timeDifference = end - today;
+
+    // Convert the time difference from milliseconds to days
+    return Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+  };
+
+  const daysLeft = endDate ? calculateDaysLeft(endDate) : 0;
+  const isSubscriptionExpired = daysLeft <= 0;
 
   return (
     <div className="p-4 min-h-screen font-poppins">
@@ -374,7 +408,7 @@ const ProviderPreview = ({ providerData, providerId }) => {
                 </button>
               </div>
             </div>
-            <div className="bg-gray-50 p-4 border rounded-lg shadow-md">
+            <div className="bg-gray-50 p-4 border rounded-lg shadow-md mt-2">
               <h2 className="font-semibold text-lg mb-4 border-b font-inter border-black">Feature</h2>
               <div className="flex gap-4">
                 <div className="text-center">
@@ -427,7 +461,69 @@ const ProviderPreview = ({ providerData, providerId }) => {
                   </form>
                 ) : (
                   <p className="text-green-600 text-sm mt-2">
-                    Your feature is currently activated.
+                    Your feature is currently activated, days left {providerData?.feature_days_left || "0"}
+                  </p>
+                )}
+              </div>
+
+
+
+
+            </div>
+            <div className="bg-gray-50 p-4 border rounded-lg shadow-md mt-2">
+              <h2 className="font-semibold text-lg mb-4 border-b font-inter border-black">Subscription</h2>
+              <div className="flex gap-4">
+                <div className="text-center">
+
+                </div>
+                <div className="text-center">
+                </div>
+
+
+              </div>
+              <div className="text-center m-2 p-2">
+                {/* Conditionally render form only if is_featured is not 1 */}
+                {isSubscriptionExpired ? (
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleSubscriptionFormSubmit(providerId, subscriptionStartDate, subscriptionEndDate);
+                    }}
+                    className="flex items-center justify-center space-x-4"
+                  >
+                    {/* Feature Start Date */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Subscription Start Date
+                      </label>
+                      <input
+                        type="date"
+                        value={subscriptionStartDate}
+                        onChange={(e) => setSubscriptionStartDate(e.target.value)}
+                        className="mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0085FF] focus:border-[#0085FF] w-full"
+                        required
+                      />
+                      <label className="block text-sm font-medium text-gray-700">
+                        Subscription End Date
+                      </label>
+                      <input
+                        type="date"
+                        value={subscriptionEndDate}
+                        onChange={(e) => setSubscriptionEndDate(e.target.value)}
+                        className="mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0085FF] focus:border-[#0085FF] w-full"
+                        required
+                      />
+                      <button
+                        type="submit"
+                        className="mt-2 bg-green-500 text-white text-sm px-6 py-2 rounded-lg shadow-md hover:bg-green-600 transition duration-200 ease-in-out self-end"
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <p className="text-green-600 text-sm mt-2">
+                    Subscription days left: {daysLeft} day{daysLeft !== 1 ? "s" : ""}.
                   </p>
                 )}
               </div>
