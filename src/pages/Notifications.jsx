@@ -16,6 +16,7 @@ const Notifications = () => {
   const [fileDoc, setfileDoc] = useState("")
   const [file, setfile] = useState("")
   const [selectedUser, setSelectedUser] = useState([])
+  const [checkAll, setCheckAll] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -43,7 +44,7 @@ const Notifications = () => {
     data.append('title', formData.title);
     data.append('description', formData.description);
     data.append('image', fileImage);
-    selectedUser.forEach((userId)=>{
+    selectedUser.forEach((userId) => {
       data.append('user_id[]', userId);
     })
     data.append('attachment', fileDoc);
@@ -98,6 +99,14 @@ const Notifications = () => {
   };
 
 
+  const handleCheckAll = () => {
+    setCheckAll((prev) => !prev);
+    if (!checkAll) {
+      setSelectedUser(users.map((user) => user.id));
+    } else {
+      setSelectedUser([]);
+    }
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -246,8 +255,14 @@ const Notifications = () => {
             </div>
           </form>
         </div>
-        <NotificationsTable users={users} selectUser={handleSelectUser} />;
-
+        {/* <NotificationsTable users={users} selectUser={handleSelectUser} />; */}
+        <NotificationsTable
+          users={users}
+          selectUser={handleSelectUser}
+          selectedUser={selectedUser}
+          checkAll={checkAll}
+          handleCheckAll={handleCheckAll}
+        />;
       </div>
     </div>
   );

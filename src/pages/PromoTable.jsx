@@ -3,6 +3,8 @@ import { BsThreeDots } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteBanner, updateBanner,fetchBanners } from "../features/promotionalBannerSlice";
 import { fetchCategories } from "../features/categorySlice";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const PromoTable = ({ banners = [] }) => {
   const dispatch = useDispatch();
@@ -15,6 +17,7 @@ const PromoTable = ({ banners = [] }) => {
     resource_type: '',
   });
   const { categories, categoryError } = useSelector((state) => state.categories);
+  const [selectedPromo, setSelectedPromo] = useState([]);
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -86,17 +89,74 @@ const PromoTable = ({ banners = [] }) => {
       });
   };
 
-
+const handleCheckboxChange = (id) => {
+      setSelectedPromo((prev) =>
+        prev.includes(id) ? prev.filter((categoryId) => categoryId !== id) : [...prev, id]
+      );
+    };
+  
+  
+    const handleSelectAll = (e) => {
+      if (e.target.checked) {
+        setSelectedPromo(banners.map((category) => category.id));
+      } else {
+        setSelectedPromo([]);
+      }
+    };
+  
+  
+    const handleDeleteSelected = () => {
+      if (selectedPromo.length === 0) return;
+    
+      Promise.all(
+        selectedPromo.map((id) => dispatch(deleteBanner({ id })))
+      ).then(() => {
+        toast.success('Selected promotions deleted successfully');
+        setSelectedPromo([]);
+      }).catch(() => {
+        toast.error('An error occurred while deleting selected promotions');
+      });
+    };
+    
+    const handleDeleteAll = () => {
+      Promise.all(
+        banners.map((promo) => dispatch(deleteBanner({ id: promo.id })))
+      ).then(() => {
+        toast.success('All promotions deleted successfully');
+        setSelectedPromo([]);
+      }).catch(() => {
+        toast.error('An error occurred while deleting all promotions');
+      });
+    };
 
   return (
     <div className="mt-4">
-      <div className="overflow-x-auto rounded-lg">
-        <table className="min-w-full bg-white border ">
+      <div className="flex justify-end gap-4 mb-4">
+            <button
+              className="bg-red-500 text-white px-4 py-2 rounded"
+              onClick={handleDeleteSelected}
+              disabled={selectedPromo.length === 0}
+            >
+              Delete Selected
+            </button>
+            <button
+              className="bg-red-700 text-white px-4 py-2 rounded"
+              onClick={handleDeleteAll}
+            >
+              Delete All
+            </button>
+          </div>
+      <div className="overflow-x-auto rounded-lg min-h-[500px]">
+        <table className="min-w-full  bg-white border max-h-[500px]">
           <thead>
             <tr className="bg-[#2B4DC994] text-left text-sm font-thin text-white">
               <th className="p-0">
                 <span className="block py-2 px-3 border-r border-gray-300">
-                  <input type="checkbox" className="h-4 w-4 rounded" />
+                  <input type="checkbox" className="h-4 w-4 rounded" 
+                  onChange={handleSelectAll}
+                  checked={selectedPromo.length === banners.length && banners.length > 0}
+                  />
+                 
                 </span>
               </th>
               <th className="p-0">SL</th>
@@ -116,7 +176,10 @@ const PromoTable = ({ banners = [] }) => {
               banners.map((banner, index) => (
                 <tr key={banner.id} className="border-b text-sm text-gray-800">
                   <td className="p-4">
-                    <input type="checkbox" className="h-4 w-4 rounded" />
+                    <input type="checkbox" className="h-4 w-4 rounded" 
+                     checked={selectedPromo.includes(banner.id)}
+                     onChange={() => handleCheckboxChange(banner.id)}
+                    />
                   </td>
                   <td className="p-4">{`0${index + 1}`}</td>
                   <td className="p-4">{banner.title}</td>
@@ -139,7 +202,7 @@ const PromoTable = ({ banners = [] }) => {
                       onClick={() => handleThreeDotsClick(banner.id)}
                     />
                     {selectedBannerId === banner.id && (
-                      <div className="absolute right-0 mt-2 bg-white border rounded-lg shadow-lg">
+                      <div className="absolute right-0 mt-2 bg-white border rounded-lg shadow-lg  z-10">
                         <button
                           className="block px-4 py-2 hover:bg-gray-200 text-sm"
                           onClick={() => handleEdit(banner)}
@@ -230,6 +293,7 @@ const PromoTable = ({ banners = [] }) => {
           </div>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 };

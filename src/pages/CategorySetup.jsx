@@ -6,14 +6,17 @@ import {
   fetchCategories,
   deleteCategory,
   updateCategory,
-} from "../features/categorySlice"; 
+} from "../features/categorySlice";
 import DownloadCsv from "../components/DownloadCsv";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CategoryTable = () => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const [editingCategory, setEditingCategory] = useState(null); // For storing the category to be edited
   const [newCategoryName, setNewCategoryName] = useState(""); // For editing the name
   const [filter, setFilter] = useState("all"); // New state for filtering categories
+  const [selectedCategory, setSelectedCategory] = useState([]);
 
   const dispatch = useDispatch();
   const { categories, loading, error } = useSelector((state) => state.categories);
@@ -59,11 +62,68 @@ const CategoryTable = () => {
   if (loading) return <p>Loading categories...</p>;
   if (error) return <p>Error fetching categories: {error}</p>;
 
+
+  const handleCheckboxChange = (id) => {
+    setSelectedCategory((prev) =>
+      prev.includes(id) ? prev.filter((categoryId) => categoryId !== id) : [...prev, id]
+    );
+  };
+
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedCategory(filteredCategories.map((category) => category.id));
+    } else {
+      setSelectedCategory([]);
+    }
+  };
+
+
+  // const handleDeleteSelected = () => {
+  //   if (selectedCategory.length === 0) return;
+  //   selectedCategory.forEach((id) => dispatch(deleteCategory(id)));
+  //   setSelectedCategory([]);
+  // };
+
+
+  // const handleDeleteAll = () => {
+  //   filteredCategories.forEach((category) => dispatch(deleteCategory(category.id)));
+  //   setSelectedCategory([]);
+  // };
+
+  const handleDeleteSelected = () => {
+    if (selectedCategory.length === 0) return;
+  
+    Promise.all(
+      selectedCategory.map((id) => dispatch(deleteCategory(id)))
+    )
+      .then(() => {
+        toast.success('Selected categories deleted successfully');
+        setSelectedCategory([]);
+      })
+      .catch(() => {
+        toast.error('An error occurred while deleting selected categories');
+      });
+  };
+  
+  const handleDeleteAll = () => {
+    Promise.all(
+      filteredCategories.map((category) => dispatch(deleteCategory(category.id)))
+    )
+      .then(() => {
+        toast.success('All filtered categories deleted successfully');
+        setSelectedCategory([]);
+      })
+      .catch(() => {
+        toast.error('An error occurred while deleting all filtered categories');
+      });
+  };
+  
   return (
     <>
       <div className="space-y-2 font-poppins">
         <div className="flex items-center justify-end">
-          
+
           <DownloadCsv data={filteredCategories} fileName="categories" />
           <button
             className="bg-blue-500 text-white px-3 md:px-6 py-2 rounded-lg shadow-md"
@@ -95,11 +155,27 @@ const CategoryTable = () => {
         </div>
 
         <div className="w-full overflow-x-auto px-1">
+          <div className="flex justify-end gap-4 mb-4">
+            <button
+              className="bg-red-500 text-white px-4 py-2 rounded"
+              onClick={handleDeleteSelected}
+              disabled={selectedCategory.length === 0}
+            >
+              Delete Selected
+            </button>
+            <button
+              className="bg-red-700 text-white px-4 py-2 rounded"
+              onClick={handleDeleteAll}
+            >
+              Delete All
+            </button>
+          </div>
           <table className="table-auto w-full bg-white shadow-md rounded-lg font-inter">
             <thead>
               <tr className="bg-[#2b4dc974] text-[10px] md:text-[12px] h-14 text-white text-center">
                 <th className="relative p-3">
-                  <input type="checkbox" className="w-4 h-4" />
+                  <input type="checkbox" className="w-4 h-4" onChange={handleSelectAll}
+                    checked={selectedCategory.length === filteredCategories.length && filteredCategories.length > 0} />
                   <span className="absolute top-0 bottom-0 right-0 h-[75%] w-[1px] bg-white m-auto"></span>
                 </th>
                 <th className="relative p-1 md:p-3">Sl</th>
@@ -118,7 +194,10 @@ const CategoryTable = () => {
                   className="border-b text-sm text-center text-gray-600 h-12"
                 >
                   <td className="p-2">
-                    <input type="checkbox" className="w-4 h-4" />
+                    <input type="checkbox" className="w-4 h-4"
+                      checked={selectedCategory.includes(category.id)}
+                      onChange={() => handleCheckboxChange(category.id)}
+                    />
                   </td>
                   <td className="p-2">{index + 1}</td>
                   <td className="p-2">
@@ -140,8 +219,8 @@ const CategoryTable = () => {
                     <label className="inline-flex items-center cursor-default">
                       <input
                         type="checkbox"
-                        checked={!!category.status} 
-                        readOnly 
+                        checked={!!category.status}
+                        readOnly
                         className="sr-only peer"
                       />
                       <div className="relative w-9 h-5 bg-gray-200 rounded-full peer-checked:bg-blue-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
@@ -152,7 +231,7 @@ const CategoryTable = () => {
                     <label className="inline-flex items-center cursor-default">
                       <input
                         type="checkbox"
-                        checked={!!category.is_featured} 
+                        checked={!!category.is_featured}
                         readOnly //  toggle read-only
                         className="sr-only peer"
                       />
@@ -201,6 +280,7 @@ const CategoryTable = () => {
             </tbody>
           </table>
         </div>
+          <ToastContainer />
       </div>
     </>
   );

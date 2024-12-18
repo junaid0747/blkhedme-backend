@@ -8,6 +8,7 @@ const SeekerTable = ({ seekers }) => {
   const [activePopup, setActivePopup] = useState(null);
   const [editingSeeker, setEditingSeeker] = useState(null); // State for the seeker being edited
   const [updatedData, setUpdatedData] = useState({}); // State for updated data
+  const [selectedSeekers, setSelectedSeekers] = useState([]);
 
   // Toggle popup visibility
   const togglePopup = (id) => {
@@ -65,15 +66,64 @@ const SeekerTable = ({ seekers }) => {
     dispatch(updateSeeker(payload)); // Dispatch the action to update status
   };
 
+  // Handle checkbox selection
+  const handleCheckboxChange = (id) => {
+    setSelectedSeekers((prev) =>
+      prev.includes(id) ? prev.filter((seekerId) => seekerId !== id) : [...prev, id]
+    );
+  };
+
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedSeekers(seekers.map((seeker) => seeker.id));
+    } else {
+      setSelectedSeekers([]);
+    }
+  };
+
+
+  const handleDeleteSelected = () => {
+    if (selectedSeekers.length === 0) return;
+    selectedSeekers.forEach((id) => dispatch(deleteSeeker(id)));
+    setSelectedSeekers([]);
+  };
+
+
+  const handleDeleteAll = () => {
+    seekers.forEach((seeker) => dispatch(deleteSeeker(seeker.id)));
+    setSelectedSeekers([]);
+  };
+
   return (
     <div className="mt-4">
+       <div className="flex justify-end gap-4 mb-4">
+        <button
+          className="bg-red-500 text-white px-4 py-2 rounded"
+          onClick={handleDeleteSelected}
+          disabled={selectedSeekers.length === 0}
+        >
+          Delete Selected
+        </button>
+        <button
+          className="bg-red-700 text-white px-4 py-2 rounded"
+          onClick={handleDeleteAll}
+        >
+          Delete All
+        </button>
+      </div>
       <div className="overflow-x-auto rounded-lg">
         <table className="min-w-full bg-white border font-inter">
           <thead>
             <tr className="bg-[#8498E0] text-[10px] md:text-[12px] text-center text-white">
               <th className="p-3 ">
                 <span className="block py-2 px-3 border-r border-gray-300">
-                  <input type="checkbox" className="h-4 w-4 rounded" />
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded"
+                    onChange={handleSelectAll}
+                    checked={selectedSeekers.length === seekers.length && seekers.length > 0}
+                  />
                 </span>
               </th>
               <th className="p-0 "><span className="block py-2 px-3 border-r border-gray-300">ID</span></th>
@@ -89,7 +139,14 @@ const SeekerTable = ({ seekers }) => {
           <tbody>
             {seekers.map((seeker, index) => (
               <tr key={seeker.id} className="border-b text-xs text-center px-2 text-gray-800">
-                <td className="p-4"><input type="checkbox" className="h-4 w-4 rounded" /></td>
+                <td className="p-4">
+                <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded"
+                    checked={selectedSeekers.includes(seeker.id)}
+                    onChange={() => handleCheckboxChange(seeker.id)}
+                  />
+                </td>
                 <td className="p-4">{`0${index + 1}`}</td>
                 <td className="p-4">
                   <div className="flex items-center">
@@ -103,9 +160,9 @@ const SeekerTable = ({ seekers }) => {
                 <td className="p-4">{new Date(seeker.date).toLocaleDateString()}</td> {/* Format date */}
                 <td className="p-4">
                   <label className="relative inline-block">
-                    <input 
-                      type="checkbox" 
-                      className="peer invisible" 
+                    <input
+                      type="checkbox"
+                      className="peer invisible"
                       checked={seeker.status === "active"} // Check based on seeker status
                       onChange={() => handleToggleChange(seeker)} // Handle toggle change
                     />
