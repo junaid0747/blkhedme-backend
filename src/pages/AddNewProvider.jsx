@@ -31,6 +31,8 @@ const AddNewProvider = () => {
   // Form State
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [arFirstName, setArFirstName] = useState("");
+  const [arLastName, setArLastName] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -135,6 +137,8 @@ const AddNewProvider = () => {
         // Optionally, reset the form
         setFirstName("");
         setLastName("");
+        setArFirstName("");
+        setArLastName("");
         setContactNumber("");
         setEmail("");
         setUsername("");
@@ -281,7 +285,56 @@ const AddNewProvider = () => {
                     )}
                   </div>
                 </div>
-
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex flex-col w-full">
+                    <label htmlFor="arFirstName" className="mb-1 ">
+                      AR First Name
+                    </label>
+                    <input
+                      type="text"
+                      name="arFirstName"
+                      id="arFirstName"
+                      placeholder="Enter Arabic First Name"
+                      className="border p-2 rounded-md w-full"
+                      value={arFirstName}
+                      onChange={(e) => setArFirstName(e.target.value)}
+                      required
+                    />
+                    {error?.message?.ar_first_name && (
+                      <div className="text-red-500 mt-2">
+                        <ul>
+                          {error.message.ar_first_name.map((msg, index) => (
+                            <li key={index}>{msg}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col w-full">
+                    <label htmlFor="arLastName" className="mb-1">
+                     AR Last Name
+                    </label>
+                    <input
+                      type="text"
+                      name="arLastName"
+                      id="arLastName"
+                      placeholder="Enter Arabic Last Name"
+                      className="border p-2 rounded-md w-full"
+                      value={arLastName}
+                      onChange={(e) => setArLastName(e.target.value)}
+                      required
+                    />
+                    {error?.message?.ar_last_name && (
+                      <div className="text-red-500 mt-2">
+                        <ul>
+                          {error.message.ar_last_name.map((msg, index) => (
+                            <li key={index}>{msg}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex flex-col w-full">
                     <label htmlFor="contactNumber" className="mb-1">

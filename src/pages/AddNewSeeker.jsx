@@ -13,6 +13,8 @@ const AddNewSeeker = () => {
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
+    ar_first_name: '',
+    ar_last_name: '',
     phone: '',
     email: '',
     password: '',
@@ -79,6 +81,8 @@ const AddNewSeeker = () => {
       setFormData({
         first_name: '',
         last_name: '',
+        ar_first_name: '',
+        ar_last_name: '',
         phone: '',
         email: '',
         password: '',
@@ -192,7 +196,38 @@ const AddNewSeeker = () => {
                     {errors.last_name && <p className="text-red-500 text-sm">{errors.last_name}</p>}
                   </div>
                 </div>
-
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex flex-col w-full">
+                    <label htmlFor="arFirstName" className="mb-1">
+                      AR First Name
+                    </label>
+                    <input
+                      type="text"
+                      name="ar_first_name"
+                      id="arFirstName"
+                      value={formData.ar_first_name}
+                      onChange={handleInputChange}
+                      placeholder="Enter Arabic First Name"
+                      className={`border p-2 rounded-md w-full ${errors.ar_first_name ? 'border-red-500' : ''}`}
+                    />
+                    {errors.ar_first_name && <p className="text-red-500 text-sm">{errors.ar_first_name}</p>}
+                  </div>
+                  <div className="flex flex-col w-full">
+                    <label htmlFor="arLastName" className="mb-1">
+                     AR Last Name
+                    </label>
+                    <input
+                      type="text"
+                      name="ar_last_name"
+                      id="arLastName"
+                      value={formData.ar_last_name}
+                      onChange={handleInputChange}
+                      placeholder="Enter Arabic Last Name"
+                      className={`border p-2 rounded-md w-full ${errors.ar_last_name ? 'border-red-500' : ''}`}
+                    />
+                    {errors.ar_last_name && <p className="text-red-500 text-sm">{errors.ar_last_name}</p>}
+                  </div>
+                </div>
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex flex-col w-full">
                     <label htmlFor="contactNumber" className="mb-1">

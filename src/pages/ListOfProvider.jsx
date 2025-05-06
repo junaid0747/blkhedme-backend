@@ -78,7 +78,26 @@ const EditProviderModal = ({
             className="border mb-2 p-2 w-full"
             required
           />
+          <input
+            type="text"
+            name="ar_first_name"
+            value={formData.ar_first_name}
+            onChange={handleChange}
+            placeholder="Arabic First Name"
+            className="border mb-2 p-2 w-full"
+            required
+          />
 
+          {/* Last Name */}
+          <input
+            type="text"
+            name="ar_last_name"
+            value={formData.ar_last_name}
+            onChange={handleChange}
+            placeholder="Arabic Last Name"
+            className="border mb-2 p-2 w-full"
+            required
+          />
           {/* Phone */}
           <input
             type="text"
@@ -147,7 +166,7 @@ const EditProviderModal = ({
                 src={formData.identity_card}
                 alt="Identity Card Preview"
                 className="mt-2 mb-2 border rounded"
-                style={{ width: '100%', height:200 }}
+                style={{ width: '100%', height: 200 }}
               />
             ) : identityCardFile ? (
               <p className="mb-2">New file selected: {identityCardFile.name}</p>
@@ -242,6 +261,8 @@ const ProviderList = () => {
     setFormData({
       first_name: provider.first_name || '',
       last_name: provider.last_name || '',
+      ar_first_name: provider.ar_first_name || '',
+      ar_last_name: provider.ar_last_name || '',
       phone: provider.phone || '',
       email: provider.email || '',
       area_of_operation: provider.area_of_operation || '',
@@ -349,7 +370,7 @@ const ProviderList = () => {
         toast.error(`Failed to change status: ${err}`); // Changed to toast.error
       });
   };
-  
+
 
   const handleStatusChange = (providerId, currentStatus) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
@@ -406,9 +427,9 @@ const ProviderList = () => {
     <div className=" font-poppins">
       {/* Add New Provider Button */}
       <div className="flex justify-end pt-4 pr-4 w-full">
-      <DownloadCsv data={getFilteredProviders()} fileName="providers" />
+        <DownloadCsv data={getFilteredProviders()} fileName="providers" />
 
-     
+
         <button
           className="bg-[#0085FF] text-white text-sm px-6 py-2 rounded-lg shadow-md hover:bg-[#0072cc] transition duration-200 ease-in-out"
           onClick={() => navigate('/add-new-provider')}
@@ -422,11 +443,10 @@ const ProviderList = () => {
         {['all', 'active', 'inactive'].map((type) => (
           <button
             key={type}
-            className={`font-semibold text-md transition-colors ${
-              filterType === type
+            className={`font-semibold text-md transition-colors ${filterType === type
                 ? 'text-blue-500 border-b-2 border-blue-500'
                 : 'text-gray-500'
-            }`}
+              }`}
             onClick={() => setFilterType(type)}
           >
             {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -466,7 +486,7 @@ const ProviderList = () => {
                       src={provider.image || notificationImg} // Fallback image if provider.image is null
                       alt={`${provider.first_name} ${provider.last_name}`}
                       className="w-8 h-8 rounded-full mr-2"
-                      style={{ width: '50px', height:'50px' }}
+                      style={{ width: '50px', height: '50px' }}
 
                     />
                     {`${provider.first_name} ${provider.last_name}`}
@@ -499,7 +519,7 @@ const ProviderList = () => {
                     checked={provider.availability === 'active'}
                     readOnly
                   /> */}
-                   <input
+                  <input
                     type="checkbox"
                     id={`status-${provider.id}`}
                     checked={provider.availability === 'active'}
@@ -553,12 +573,12 @@ const ProviderList = () => {
                   </button>
                   {dropdownOpen === provider.id && (
                     <div className="absolute right-0 bg-white shadow-md rounded mt-1 z-10">
-                      
-                       <button
+
+                      <button
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                         onClick={() =>
                           navigate(`/onboarding-provider-profile?id=${provider.id}`)
-                        } 
+                        }
                       >
                         View
                       </button>

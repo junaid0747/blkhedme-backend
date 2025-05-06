@@ -98,6 +98,7 @@ export default function LocationsList() {
 // Modal Component for Adding/Editing
 function AddEditLocationModal({ onSave, onCancel, initialData = {} }) {
   const [title, setTitle] = useState(initialData.title || '');
+  const [arTitle, setArTitle] = useState(initialData.ar_title || '');
   const [description, setDescription] = useState(initialData.description || '');
   const [country_id, setCountryId] = useState(initialData.country_id || '');
 
@@ -123,7 +124,15 @@ function AddEditLocationModal({ onSave, onCancel, initialData = {} }) {
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
-
+        <div className="mb-4">
+          <label className="block text-sm font-bold mb-2">AR Title</label>
+          <input
+            type="text"
+            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={arTitle}
+            onChange={(e) => setArTitle(e.target.value)}
+          />
+        </div>
         <div className="mb-4">
           <label className="block text-sm font-bold mb-2">Description</label>
           <textarea

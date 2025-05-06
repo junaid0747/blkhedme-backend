@@ -11,6 +11,7 @@ const SubCategorySetup = () => {
   const [showUploadArea, setShowUploadArea] = useState(true);
   const [locations, setLocations] = useState([]); // This will hold the locations
   const [categoryName, setCategoryName] = useState('');
+  const [categoryArName, setCategoryArName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,6 +63,7 @@ const SubCategorySetup = () => {
     // Define parent_id if applicable, or set to null
     const newSubCategory = new FormData();
     newSubCategory.append('name', categoryName);
+    newSubCategory.append('ar_name', categoryArName);
     newSubCategory.append('description',description)
     newSubCategory.append('parent_id',selectedCity)
     newSubCategory.append('image',selectedFile)
@@ -79,6 +81,7 @@ const SubCategorySetup = () => {
         
         // Resetting form fields
         setCategoryName('');
+        setCategoryArName('');
         setDescription('');
         setSelectedCity('');
         setSelectedFile(null);
@@ -134,9 +137,24 @@ const SubCategorySetup = () => {
               />
             </div>
           </div>
-
           <div className="mb-6">
-            <label className="block text-gray-600 font-semibold mb-2">Select City</label>
+            <label className="block text-gray-600 font-semibold mb-2">Subcategory AR Name</label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <FaBuffer className="h-5 w-5 text-gray-400" />
+              </span>
+              <input
+                type="text"
+                placeholder="Enter Subcategory Arabic Name"
+                value={categoryArName}
+                onChange={(e) => setCategoryArName(e.target.value)}
+                className="w-full pl-10 p-3 border rounded-md focus:outline-none"
+                required
+              />
+            </div>
+          </div>
+          <div className="mb-6">
+            <label className="block text-gray-600 font-semibold mb-2">Select Category</label>
             <div className="relative">
               <select
                 value={selectedCity}

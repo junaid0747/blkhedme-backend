@@ -60,6 +60,8 @@ const SeekerTable = ({ seekers }) => {
         status: updatedStatus,
         first_name: seeker.first_name,
         last_name: seeker.last_name,
+        ar_first_name: seeker.ar_first_name,
+        ar_last_name: seeker.ar_last_name,
         phone: seeker.phone,
       },
     };
@@ -211,6 +213,28 @@ const SeekerTable = ({ seekers }) => {
                   type="text"
                   name="last_name"
                   value={updatedData.last_name}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="ar_first_name">AR First Name:</label>
+                <input
+                  type="text"
+                  name="ar_first_name"
+                  value={updatedData.ar_first_name}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="ar_last_name">AR Last Name:</label>
+                <input
+                  type="text"
+                  name="ar_last_name"
+                  value={updatedData.ar_last_name}
                   onChange={handleInputChange}
                   required
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"

@@ -9,6 +9,7 @@ const CategorySetup = () => {
   const [language, setLanguage] = useState("default");
   const [selectedFile, setSelectedFile] = useState(null);
   const [categoryName, setCategoryName] = useState("");
+  const [categoryArName, setCategoryArName] = useState("");
   const [selectedCity, setSelectedCity] = useState(""); // This will hold the city ID
   const fileInputRef = useRef(null);
   const [showUploadArea, setShowUploadArea] = useState(true);
@@ -51,6 +52,7 @@ const CategorySetup = () => {
   
     const formData = new FormData();
     formData.append("title", categoryName); 
+    formData.append("ar_title", categoryArName);
     formData.append("city", selectedCity);   
     formData.append("file", selectedFile);   
   
@@ -58,6 +60,7 @@ const CategorySetup = () => {
       await dispatch(addCategory(formData)).unwrap();
       alert("Data submitted successfully!");
       setCategoryName("");
+      setCategoryArName("");
       setSelectedCity("");
       setSelectedFile(null);
       setShowUploadArea(true);
@@ -107,6 +110,21 @@ const CategorySetup = () => {
                 placeholder="Enter Category Name"
                 value={categoryName}
                 onChange={(e) => setCategoryName(e.target.value)}
+                className="w-full pl-10 p-3 border rounded-md focus:outline-none"
+              />
+            </div>
+          </div>
+          <div className="mb-6">
+            <label className="block text-gray-600 font-semibold mb-2"> Category AR Name (Default)</label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <FaBuffer className="h-5 w-5 text-gray-400" />
+              </span>
+              <input
+                type="text"
+                placeholder="Enter Category Arabic Name"
+                value={categoryArName}
+                onChange={(e) => setCategoryArName(e.target.value)}
                 className="w-full pl-10 p-3 border rounded-md focus:outline-none"
               />
             </div>
