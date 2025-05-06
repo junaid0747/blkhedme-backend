@@ -18,6 +18,8 @@ const SubCategorySetup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [editName, setEditName] = useState("");
+  const [editArName, setEditArName] = useState("");
+
 
   const { subCategories, loading, error } = useSelector(
     (state) => state.subCategories
@@ -35,6 +37,7 @@ const SubCategorySetup = () => {
     if (category) {
       setEditingCategory(category); // Store the entire category object
       setEditName(category.name); // Set the name for editing
+      setEditArName(category.ar_name); // Set the name for editing
       setIsModalOpen(true);
     } else {
       alert("Error: Category data is missing or incomplete.");
@@ -70,6 +73,7 @@ const SubCategorySetup = () => {
     const updatedData = {
       id: editingCategory.id, // Accessing id from editingCategory
       name: editName,
+      ar_name: editArName,
       location_id: parseInt(editingCategory.location_id), // Keep the original location_id
       description: editingCategory.description || "", // Keep the original description
       parent_id: editingCategory.parent_id || 0, // Set to 0 if not provided
@@ -81,6 +85,7 @@ const SubCategorySetup = () => {
       .then(() => {
         setEditingCategory(null);
         setEditName("");
+        setEditArName("");
         setIsModalOpen(false);
         dispatch(fetchSubCategories());
       })
@@ -192,6 +197,13 @@ const SubCategorySetup = () => {
               onChange={(e) => setEditName(e.target.value)}
               className="border rounded px-3 py-2 w-full mb-4"
               placeholder="Subcategory Name"
+            />
+             <input
+              type="text"
+              value={editArName}
+              onChange={(e) => setEditArName(e.target.value)}
+              className="border rounded px-3 py-2 w-full mb-4"
+              placeholder="Subcategory Arabic Name"
             />
             <div className="flex justify-between">
               <button
