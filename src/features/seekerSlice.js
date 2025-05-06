@@ -40,6 +40,8 @@ export const addSeeker = createAsyncThunk('seekers/addSeeker', async (newSeeker)
 
     if (newSeeker.first_name) seekerToAdd.first_name = newSeeker.first_name;
     if (newSeeker.last_name) seekerToAdd.last_name = newSeeker.last_name;
+    if (newSeeker.ar_first_name) seekerToAdd.ar_first_name = newSeeker.ar_first_name;
+    if (newSeeker.ar_last_name) seekerToAdd.ar_last_name = newSeeker.ar_last_name;
     if (newSeeker.phone) seekerToAdd.phone = newSeeker.phone;
     if (newSeeker.email) seekerToAdd.email = newSeeker.email;
     if (newSeeker.username) seekerToAdd.username = newSeeker.username; 

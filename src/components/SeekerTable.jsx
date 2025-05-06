@@ -21,6 +21,8 @@ const SeekerTable = ({ seekers }) => {
     setUpdatedData({ // Pre-fill the form with current seeker data
       first_name: seeker.first_name || "",
       last_name: seeker.last_name || "",
+      ar_first_name: seeker.ar_first_name || "",
+      ar_last_name: seeker.ar_last_name || "",
       phone: seeker.phone || "",
     });
   };

@@ -57,6 +57,7 @@ export const editSubCategory = createAsyncThunk(
     // Appending the required fields only if they are defined in the form
     formData.append('location_id', data.location_id || '');
     formData.append('name', data.name || '');
+    formData.append('ar_name', data.ar_name || '');
     formData.append('image', data.image || null); // the image as handled as optional
     formData.append('description', data.description || '');
     formData.append('parent_id', data.parent_id || 0); // Using 0 if parent_id is not defined

@@ -212,6 +212,8 @@ const ProviderList = () => {
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
+    ar_first_name: '',
+    ar_last_name: '',
     phone: '',
     email: '',
     area_of_operation: '',
@@ -289,6 +291,8 @@ const ProviderList = () => {
     const formDataToSend = new FormData();
     formDataToSend.append('first_name', formData.first_name);
     formDataToSend.append('last_name', formData.last_name);
+    formDataToSend.append('ar_first_name', formData.ar_first_name);
+    formDataToSend.append('ar_last_name', formData.ar_last_name);
     formDataToSend.append('phone', formData.phone);
     formDataToSend.append('email', formData.email);
     // formDataToSend.append('area_of_operation', formData.area_of_operation);
@@ -331,6 +335,8 @@ const ProviderList = () => {
     setFormData({
       first_name: '',
       last_name: '',
+      ar_first_name: '',
+      ar_last_name: '',
       phone: '',
       email: '',
       area_of_operation: '',

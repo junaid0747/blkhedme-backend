@@ -104,6 +104,8 @@ const AddNewProvider = () => {
     const formData = new FormData();
     formData.append("first_name", firstName);
     formData.append("last_name", lastName);
+    formData.append("ar_first_name", arFirstName);
+    formData.append("ar_last_name", arLastName);
     formData.append("phone", contactNumber);
     formData.append("username", username);
     formData.append("email", email);
