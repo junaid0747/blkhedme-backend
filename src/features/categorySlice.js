@@ -1,14 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { BASE_URL } from '../api'; // adjust path as needed
 
 // API endpoint
-const API_URL = 'https://apiv2.blkhedme.com/api/admin/categories';
+const API_URL = `${BASE_URL}admin/`;
 
 // Fetching all categories
 export const fetchCategories = createAsyncThunk('category/fetchCategories', async (query) => {
   const token = localStorage.getItem('authToken');
   try {
-    const response = await axios.get(API_URL, {
+    const response = await axios.get(`${API_URL}categories`, {
       headers: {
         Authorization: `Bearer ${token}`, 
       },
@@ -36,7 +37,7 @@ export const addCategory = createAsyncThunk(
     }
 
     try {
-      const response = await axios.post('https://apiv2.blkhedme.com/api/admin/categories', newCategory, {
+      const response = await axios.post(`${API_URL}categories`, newCategory, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data', // Ensure correct Content-Type
@@ -51,28 +52,35 @@ export const addCategory = createAsyncThunk(
   }
 );
 // toggle category
-export const toggleCategoryStatus = createAsyncThunk('categories/toggleCategoryStatus', async (id) => {
-  const token = localStorage.getItem('authToken');
-  try {
-    const response = await axios.put(`https://apiv2.blkhedme.com/api/admin/category/status/${id}`, {}, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    console.log("Status Update API Response:", response.data);
-    return response.data.category; // aAPI returns the updated category objectss
-  } catch (error) {
-    console.error('Error updating category status:', error);
-    throw error;
+export const toggleCategoryStatus = createAsyncThunk(
+  'categories/toggleCategoryStatus',
+  async (id) => {
+    const token = localStorage.getItem('authToken');
+    try {
+      const response = await axios.get(
+        `${API_URL}category/status/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log('Status Update API Response:', response.data);
+      return response.data.category;
+    } catch (error) {
+      console.error('Error updating category status:', error);
+      throw error;
+    }
   }
-});
+);
+
 
 // Updating an existing category
 export const updateCategory = createAsyncThunk('categories/updateCategory', async ({ id, updatedData }) => {
   const token = localStorage.getItem('authToken');
   console.log("ID>> :",id)
   try {
-    const response = await axios.put(`${API_URL}/${id}`, updatedData, {
+    const response = await axios.put(`${API_URL}categories/${id}`, updatedData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -90,7 +98,7 @@ export const updateCategory = createAsyncThunk('categories/updateCategory', asyn
 export const deleteCategory = createAsyncThunk('categories/deleteCategory', async (id) => {
   const token = localStorage.getItem('authToken');
   try {
-    await axios.delete(`${API_URL}/${id}`, {
+    await axios.delete(`${API_URL}categories/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`, 
       },

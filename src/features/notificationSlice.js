@@ -1,10 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { BASE_URL } from '../api'; // adjust path as needed
+
 
 // API URL and Token
 const PUSH_NOTIFICATION_URL = 'https://apiv2.blkhedme.com/api/admin/push/notification';
-const ALL_USERS_URL = 'https://apiv2.blkhedme.com/api/admin/all/users';
+const ALL_USERS_URL = `${BASE_URL}admin/all/users`;
 const API_TOKEN = `${localStorage.getItem('authToken')}`; 
+
 
 // Async action to push notification
 export const pushNotification = createAsyncThunk(

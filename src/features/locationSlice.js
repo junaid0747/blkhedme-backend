@@ -1,8 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { BASE_URL } from '../api'; // adjust path as needed
 
-// APIbase URL
-const API_URL = 'https://apiv2.blkhedme.com/api/admin/locations';
+
+
+
+const API_URL = `${BASE_URL}admin/locations`;
+
 
 const AUTH_TOKEN = `${localStorage.getItem('authToken')}`;
 

@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios'; // For making the API request
 import { login } from "../../features/userDetailSlice"; // Redux action to handle login
+import { BASE_URL } from '../../api'; // adjust path as needed
+
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -24,7 +26,7 @@ const LoginPage = () => {
     e.preventDefault();
   
     try {
-      const response = await axios.post('https://apiv2.blkhedme.com/api/admin/login', { email, password });
+      const response = await axios.post(`${BASE_URL}admin/login`, { email, password });
       const { token } = response.data;
   
       if (token) {

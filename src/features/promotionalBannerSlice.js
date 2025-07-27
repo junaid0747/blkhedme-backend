@@ -1,7 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { BASE_URL } from '../api'; // adjust path as needed
 
-const API_URL = 'https://apiv2.blkhedme.com/api/admin/promotional/banner';
+
+// const API_URL = 'https://apiv2.blkhedme.com/api/admin/promotional/banner';
+const API_URL = `${BASE_URL}admin/promotional/banner`;
 
 // Async thunk to fetch promotional banners
 export const fetchBanners = createAsyncThunk(

@@ -1,7 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { BASE_URL } from '../api';
 
-const API_URL = "https://apiv2.blkhedme.com/api/admin/subcategories";
+
+const API_URL = `${BASE_URL}admin/subcategories`;
 
 // Fetching all subcategories
 export const fetchSubCategories = createAsyncThunk(

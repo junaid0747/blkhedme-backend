@@ -1,8 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { BASE_URL } from '../api'; // adjust path as needed
+
 
 // API endpoint
-const API_URL = 'https://apiv2.blkhedme.com/api/admin/provider';
+// const API_URL = 'https://apiv2.blkhedme.com/api/admin/provider';
+const API_URL = `${BASE_URL}admin/provider`;
 
 // Fetching all providers
 export const fetchProviders = createAsyncThunk('provider/fetchProviders', async (query) => {

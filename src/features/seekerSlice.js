@@ -1,8 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { BASE_URL } from '../api';
+
 
 // API endpoint
-const API_URL = 'https://apiv2.blkhedme.com/api/admin/seeker';
+const API_URL = `${BASE_URL}admin/seeker`;
 
 // Function to get the authorization token
 const getAuthToken = () => {

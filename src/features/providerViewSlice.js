@@ -1,6 +1,8 @@
 // Import necessary functions from Redux Toolkit and Axios
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { BASE_URL } from '../api'; // adjust path as needed
+
 
 // Create an async thunk for fetching provider data from the API
 export const fetchProvider = createAsyncThunk(
@@ -11,7 +13,7 @@ export const fetchProvider = createAsyncThunk(
       const authToken = localStorage.getItem('authToken');
       
       // Make API request with authToken in headers
-      const response = await axios.get(`https://apiv2.blkhedme.com/api/admin/provider/${providerId}`, {
+      const response = await axios.get(`${BASE_URL}admin/provider/${providerId}`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },

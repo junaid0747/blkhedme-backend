@@ -6,6 +6,7 @@ import {
   fetchCategories,
   deleteCategory,
   updateCategory,
+  toggleCategoryStatus,
 } from "../features/categorySlice";
 import DownloadCsv from "../components/DownloadCsv";
 import { ToastContainer, toast } from 'react-toastify';
@@ -93,7 +94,7 @@ const CategoryTable = () => {
 
   const handleDeleteSelected = () => {
     if (selectedCategory.length === 0) return;
-  
+
     Promise.all(
       selectedCategory.map((id) => dispatch(deleteCategory(id)))
     )
@@ -105,7 +106,7 @@ const CategoryTable = () => {
         toast.error('An error occurred while deleting selected categories');
       });
   };
-  
+
   const handleDeleteAll = () => {
     Promise.all(
       filteredCategories.map((category) => dispatch(deleteCategory(category.id)))
@@ -118,7 +119,17 @@ const CategoryTable = () => {
         toast.error('An error occurred while deleting all filtered categories');
       });
   };
-  
+
+  const handleToggleStatus = async (id) => {
+    try {
+      await dispatch(toggleCategoryStatus(id)).unwrap();
+      toast.success('Category status updated successfully');
+      dispatch(fetchCategories()); 
+    } catch (error) {
+      toast.error('Failed to update category status');
+    }
+  };
+
   return (
     <>
       <div className="space-y-2 font-poppins">
@@ -215,17 +226,20 @@ const CategoryTable = () => {
                   <td className="p-2">{category.sub_category_count || "N/A"}</td>
                   <td className="p-2">{category.providers_count || "N/A"}</td>
                   <td className="p-2">
-                    {/* Status toggle (read-only) */}
-                    <label className="inline-flex items-center cursor-default">
-                      <input
-                        type="checkbox"
-                        checked={!!category.status}
-                        readOnly
-                        className="sr-only peer"
-                      />
-                      <div className="relative w-9 h-5 bg-gray-200 rounded-full peer-checked:bg-blue-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
-                    </label>
+                     <label className="relative inline-block">
+                    <input
+                      type="checkbox"
+                      className="peer invisible"
+                      checked={category.status === "active"} // Check based on seeker status
+                      onChange={() => handleToggleStatus(category.id)} // Handle toggle change
+                    />
+                    <span className="absolute top-0 left-0 w-9 h-5 cursor-pointer rounded-full bg-slate-200 border border-slate-300 transition-all duration-100 peer-checked:bg-sky-700"></span>
+                    <span className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full z-10 transition-all duration-100 peer-checked:translate-x-4"></span>
+                  </label>
+                  
                   </td>
+
+
                   <td className="p-2">
                     {/* Is Featured toggle (read-only) */}
                     <label className="inline-flex items-center cursor-default">
@@ -280,7 +294,7 @@ const CategoryTable = () => {
             </tbody>
           </table>
         </div>
-          <ToastContainer />
+        <ToastContainer />
       </div>
     </>
   );
