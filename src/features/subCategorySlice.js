@@ -4,6 +4,7 @@ import { BASE_URL } from '../api';
 
 
 const API_URL = `${BASE_URL}admin/subcategories`;
+const API_MAIN_URL = `${BASE_URL}admin/`;
 
 // Fetching all subcategories
 export const fetchSubCategories = createAsyncThunk(
@@ -100,6 +101,28 @@ export const deleteSubCategory = createAsyncThunk(
     } catch (error) {
       console.error('Error deleting subcategory:', error);
       throw error; 
+    }
+  }
+);
+
+export const toggleSubCategoryStatus = createAsyncThunk(
+  'subcategories/toggleSubCategoryStatus',
+  async (id) => {
+    const token = localStorage.getItem('authToken');
+    try {
+      const response = await axios.get(
+        `${API_MAIN_URL}subcategory/status/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log('Status Update API Response:', response.data);
+      return response.data.category;
+    } catch (error) {
+      console.error('Error updating subcategory status:', error);
+      throw error;
     }
   }
 );

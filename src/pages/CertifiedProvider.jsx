@@ -14,6 +14,8 @@ import {
 import { fetchCategories } from '../features/categorySlice';
 import notificationImg from '../Assets/notificationImg.png';
 import DownloadCsv from '../components/DownloadCsv';
+import { fetchLocations } from "../features/locationSlice";
+
 
 // Modal Component for Editing Provider
 const EditProviderModal = ({
@@ -23,8 +25,11 @@ const EditProviderModal = ({
   formData,
   setFormData,
   categories,
+  locations = []
 }) => {
   const [identityCardFile, setIdentityCardFile] = useState(null);
+  const [subcategories, setSubcategories] = useState([]);
+  const [selectedSubcategory, setSelectedSubcategory] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -46,6 +51,22 @@ const EditProviderModal = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(identityCardFile); // Pass the file along with form submission
+  };
+
+  const handleCategoryChange = (e) => {
+    const categoryId = e.target.value;
+
+    setFormData((prev) => ({
+      ...prev,
+      profession: categoryId,
+      subcategory: "" // Reset subcategory
+    }));
+
+    const selectedCategory = categories.find(
+      (category) => category.id === parseInt(categoryId)
+    );
+
+    setSubcategories(selectedCategory?.sub_category || []);
   };
 
   return (
@@ -74,7 +95,26 @@ const EditProviderModal = ({
             className="border mb-2 p-2 w-full"
             required
           />
+          <input
+            type="text"
+            name="ar_first_name"
+            value={formData.ar_first_name}
+            onChange={handleChange}
+            placeholder="Arabic First Name"
+            className="border mb-2 p-2 w-full"
+            required
+          />
 
+          {/* Last Name */}
+          <input
+            type="text"
+            name="ar_last_name"
+            value={formData.ar_last_name}
+            onChange={handleChange}
+            placeholder="Arabic Last Name"
+            className="border mb-2 p-2 w-full"
+            required
+          />
           {/* Phone */}
           <input
             type="text"
@@ -99,14 +139,14 @@ const EditProviderModal = ({
 
           {/* Area of Operation Dropdown */}
           <select
-            name="area_of_operation"
-            value={formData.area_of_operation}
-            onChange={handleChange}
+            name="profession"
+            value={formData.profession}
+            onChange={handleCategoryChange} // ✅ Custom handler
             className="border mb-2 p-2 w-full"
             required
           >
             <option value="" disabled>
-              Select Area of Operation
+              Select Profession
             </option>
             {categories && categories.length > 0 ? (
               categories.map((category) => (
@@ -118,21 +158,48 @@ const EditProviderModal = ({
               <option disabled>Loading categories...</option>
             )}
           </select>
-
-          {/* Profession Dropdown */}
           <select
-            name="profession"
-            value={formData.profession}
+            name="subcategory"
+            value={formData.subcategory}
             onChange={handleChange}
             className="border mb-2 p-2 w-full"
             required
           >
             <option value="" disabled>
-              Select Profession
+              Select Subcategory
             </option>
-            <option value={1}>BBA</option> {/*submitting job as id*/}
-            <option value={2}>MBBS</option>
-            {/* Add more professions as needed */}
+            {subcategories.length > 0 ? (
+              subcategories.map((sub) => (
+                <option key={sub.id} value={sub.id}>
+                  {sub.name}
+                </option>
+              ))
+            ) : (
+              <option disabled>No subcategories available</option>
+            )}
+          </select>
+
+
+          {/* Profession Dropdown */}
+          <select
+            name="area_of_operation"
+            value={formData.area_of_operation}
+            onChange={handleChange}
+            className="border mb-2 p-2 w-full"
+            required
+          >
+            <option value="" disabled>
+              Select Area of Operation
+            </option>
+            {locations && locations.length > 0 ? (
+              locations.map((location) => (
+                <option key={location.id} value={location.id}>
+                  {location.title}
+                </option>
+              ))
+            ) : (
+              <option disabled>Loading area of operation...</option>
+            )}
           </select>
 
           {/* Identity Card Upload */}
@@ -143,7 +210,7 @@ const EditProviderModal = ({
                 src={formData.identity_card}
                 alt="Identity Card Preview"
                 className="mt-2 mb-2 border rounded"
-                style={{ width: '100%', height:200 }}
+                style={{ width: '100%', height: 200 }}
               />
             ) : identityCardFile ? (
               <p className="mb-2">New file selected: {identityCardFile.name}</p>
@@ -213,12 +280,15 @@ const CertifiedProvider = () => {
   } = providersState || {};
 
   const categoriesState = useSelector((state) => state.categories);
+  const locationState = useSelector((state) => state.locations);
   const { categories = [], loading: loadingCategories } = categoriesState || {};
+  const { locations = [], loading: loadingLocations } = locationState || {};
 
   // Fetch providers and categories on component mount
   useEffect(() => {
     dispatch(fetchProviders());
     dispatch(fetchCategories());
+    dispatch(fetchLocations());
   }, [dispatch]);
 
   // Handle update status changes
@@ -324,17 +394,17 @@ const CertifiedProvider = () => {
       if (filterType === 'active') {
         return provider.is_certified === 'active' && provider.certified === 1;
       }
-  
+
       // Inactive providers (professional_status !== 'active') with certification
       if (filterType === 'inactive') {
         return provider.professional_status !== 'active' && provider.certified === 1;
       }
-  
+
       // All providers with certification
       return provider.is_certified === 1;
     });
   };
-  
+
 
   // Handle Status Change Toggle
   const handleStatusChange = (providerId, currentStatus) => {
@@ -379,7 +449,7 @@ const CertifiedProvider = () => {
     <div className=" font-poppins">
       {/* Add New Provider Button */}
       <div className="flex justify-end pt-4 pr-4 w-full py-2">
-      <DownloadCsv data={getFilteredProviders()} fileName="certified" />
+        <DownloadCsv data={getFilteredProviders()} fileName="certified" />
         <button
           className="bg-[#0085FF] text-white text-sm px-6 py-2 rounded-lg shadow-md hover:bg-[#0072cc] transition duration-200 ease-in-out"
           onClick={() => navigate('/add-new-provider')}
@@ -408,7 +478,7 @@ const CertifiedProvider = () => {
             </tr>
           </thead>
           <tbody>
-            {getFilteredProviders().filter((_provider)=> _provider.is_certified).map((provider, index) => (
+            {getFilteredProviders().filter((_provider) => _provider.is_certified).map((provider, index) => (
               <tr
                 key={provider.id}
                 className="border-b text-xs text-center hover:bg-gray-50 transition-colors"
@@ -420,7 +490,7 @@ const CertifiedProvider = () => {
                       src={provider.image || notificationImg} // Fallback image if provider.image is null
                       alt={`${provider.first_name} ${provider.last_name}`}
                       className="w-8 h-8 rounded-full mr-2"
-                      style={{ width: '50px', height:'50px' }}
+                      style={{ width: '50px', height: '50px' }}
 
                     />
                     {`${provider.first_name} ${provider.last_name}`}
@@ -515,6 +585,7 @@ const CertifiedProvider = () => {
         formData={formData}
         setFormData={setFormData}
         categories={categories}
+        locations={locations}
       />
     </div>
   );

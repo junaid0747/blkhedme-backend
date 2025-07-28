@@ -18,6 +18,7 @@ import {
 import { fetchCategories } from '../features/categorySlice';
 import notificationImg from '../Assets/notificationImg.png';
 import DownloadCsv from '../components/DownloadCsv';
+import { fetchLocations } from "../features/locationSlice";
 
 // Modal Component for Editing Provider
 const EditProviderModal = ({
@@ -27,13 +28,20 @@ const EditProviderModal = ({
   formData,
   setFormData,
   categories,
+  locations = [] // Added locations prop
 }) => {
+
   const [identityCardFile, setIdentityCardFile] = useState(null);
+
+  const [subcategories, setSubcategories] = useState([]);
+  const [selectedSubcategory, setSelectedSubcategory] = useState("");
 
   useEffect(() => {
     if (isOpen) {
       setIdentityCardFile(null); // Reset file when modal opens
     }
+
+
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -51,6 +59,23 @@ const EditProviderModal = ({
     e.preventDefault();
     onSubmit(identityCardFile); // Pass the file along with form submission
   };
+
+  const handleCategoryChange = (e) => {
+    const categoryId = e.target.value;
+
+    setFormData((prev) => ({
+      ...prev,
+      profession: categoryId,
+      subcategory: "" // Reset subcategory
+    }));
+
+    const selectedCategory = categories.find(
+      (category) => category.id === parseInt(categoryId)
+    );
+
+    setSubcategories(selectedCategory?.sub_category || []);
+  };
+
 
   return (
     <div className="h-screen w-screen fixed top-0 left-0 inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50 p-16">
@@ -121,15 +146,15 @@ const EditProviderModal = ({
           />
 
           {/* Area of Operation Dropdown */}
-          {/* <select
-            name="area_of_operation"
-            value={formData.area_of_operation}
-            onChange={handleChange}
+          <select
+            name="profession"
+            value={formData.profession}
+            onChange={handleCategoryChange} // ✅ Custom handler
             className="border mb-2 p-2 w-full"
             required
           >
             <option value="" disabled>
-              Select Area of Operation
+              Select Profession
             </option>
             {categories && categories.length > 0 ? (
               categories.map((category) => (
@@ -140,23 +165,50 @@ const EditProviderModal = ({
             ) : (
               <option disabled>Loading categories...</option>
             )}
-          </select> */}
-
-          {/* Profession Dropdown */}
-          {/* <select
-            name="profession"
-            value={formData.profession}
+          </select>
+          <select
+            name="subcategory"
+            value={formData.subcategory}
             onChange={handleChange}
             className="border mb-2 p-2 w-full"
             required
           >
             <option value="" disabled>
-              Select Profession
+              Select Subcategory
             </option>
-            <option value={1}>BBA</option> 
-            <option value={2}>MBBS</option>
-           
-          </select> */}
+            {subcategories.length > 0 ? (
+              subcategories.map((sub) => (
+                <option key={sub.id} value={sub.id}>
+                  {sub.name}
+                </option>
+              ))
+            ) : (
+              <option disabled>No subcategories available</option>
+            )}
+          </select>
+
+
+          {/* Profession Dropdown */}
+          <select
+            name="area_of_operation"
+            value={formData.area_of_operation}
+            onChange={handleChange}
+            className="border mb-2 p-2 w-full"
+            required
+          >
+            <option value="" disabled>
+              Select Area of Operation
+            </option>
+            {locations && locations.length > 0 ? (
+              locations.map((location) => (
+                <option key={location.id} value={location.id}>
+                  {location.title}
+                </option>
+              ))
+            ) : (
+              <option disabled>Loading area of operation...</option>
+            )}
+          </select>
 
           {/* Identity Card Upload */}
           <div className="mb-2 mt-4">
@@ -206,9 +258,16 @@ const EditProviderModal = ({
 
 // Main Provider List Component
 const ProviderList = () => {
+
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState(null);
+
+  const [sortConfig, setSortConfig] = useState({
+    key: 'created_at',
+    direction: 'descending',
+  });
+
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -218,6 +277,7 @@ const ProviderList = () => {
     email: '',
     area_of_operation: '',
     profession: '',
+    subcategory: '',
     identity_card: '',
     // Removed 'image' field to prevent accidental overwriting
   });
@@ -238,12 +298,15 @@ const ProviderList = () => {
   } = providersState || {};
 
   const categoriesState = useSelector((state) => state.categories);
-  const { categories = [], loading: loadingCategories } = categoriesState || {};
+  const locationState = useSelector((state) => state.locations);
 
+  const { categories = [], loading: loadingCategories } = categoriesState || {};
+  const { locations = [], loading: loadingLocations } = locationState || {};
   // Fetch providers and categories on component mount
   useEffect(() => {
     dispatch(fetchProviders());
     dispatch(fetchCategories());
+    dispatch(fetchLocations());
   }, [dispatch]);
 
   // Handle update status changes
@@ -269,6 +332,7 @@ const ProviderList = () => {
       email: provider.email || '',
       area_of_operation: provider.area_of_operation || '',
       profession: provider.profession || '',
+      subcategory: provider.sub_category_id || '',
       identity_card: provider.identity_card || '',
       // Ensure 'image' is not part of formData to prevent overwriting
     });
@@ -295,8 +359,9 @@ const ProviderList = () => {
     formDataToSend.append('ar_last_name', formData.ar_last_name);
     formDataToSend.append('phone', formData.phone);
     formDataToSend.append('email', formData.email);
-    // formDataToSend.append('area_of_operation', formData.area_of_operation);
-    // formDataToSend.append('profession', formData.profession);
+    formDataToSend.append('area_of_operation', formData.area_of_operation);
+    formDataToSend.append('profession', formData.profession);
+    formDataToSend.append('subcategory', formData.subcategory);
 
     // Handle Identity Card
     if (file) {
@@ -348,17 +413,47 @@ const ProviderList = () => {
 
   // Filter Providers Based on Status
   const getFilteredProviders = () => {
+    let filtered = [...providers];
+
+    // Apply professional status filter
     if (filterType === 'active') {
-      return providers.filter(
+      filtered = filtered.filter(
         (provider) => provider.professional_status === 'active'
       );
-    }
-    if (filterType === 'inactive') {
-      return providers.filter(
+    } else if (filterType === 'inactive') {
+      filtered = filtered.filter(
         (provider) => provider.professional_status !== 'active'
       );
     }
-    return providers;
+
+    // Apply sorting
+    if (sortConfig.key) {
+      filtered.sort((a, b) => {
+        if (sortConfig.key === 'category') {
+          // Handle category sorting
+          const aValue = a.category?.title || '';
+          const bValue = b.category?.title || '';
+
+          if (aValue < bValue) {
+            return sortConfig.direction === 'ascending' ? -1 : 1;
+          }
+          if (aValue > bValue) {
+            return sortConfig.direction === 'ascending' ? 1 : -1;
+          }
+          return 0;
+        } else if (sortConfig.key === 'created_at') {
+          // Handle date sorting (newest first by default)
+          const aDate = new Date(a.created_at || 0);
+          const bDate = new Date(b.created_at || 0);
+          return sortConfig.direction === 'descending'
+            ? bDate - aDate
+            : aDate - bDate;
+        }
+        return 0;
+      });
+    }
+
+    return filtered;
   };
 
   // Handle Status Change Toggle
@@ -429,6 +524,48 @@ const ProviderList = () => {
     return null;
   }
 
+
+
+  // Add this sorting function
+  const sortProviders = (providers) => {
+    const sortableItems = [...providers];
+    if (sortConfig.key) {
+      sortableItems.sort((a, b) => {
+        // Handle cases where category might be null
+        const aValue = a.category?.title || '';
+        const bValue = b.category?.title || '';
+
+        if (aValue < bValue) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableItems;
+  };
+
+  const requestSort = (key) => {
+    let direction = 'ascending';
+
+    // If clicking the same key, toggle direction
+    if (sortConfig.key === key) {
+      direction = sortConfig.direction === 'ascending' ? 'descending' : 'ascending';
+    }
+    // If clicking a different key, default to ascending for category
+    else if (key === 'category') {
+      direction = 'ascending';
+    }
+    // For date, default to descending (newest first)
+    else if (key === 'created_at') {
+      direction = 'descending';
+    }
+
+    setSortConfig({ key, direction });
+  };
+
   return (
     <div className=" font-poppins">
       {/* Add New Provider Button */}
@@ -450,8 +587,8 @@ const ProviderList = () => {
           <button
             key={type}
             className={`font-semibold text-md transition-colors ${filterType === type
-                ? 'text-blue-500 border-b-2 border-blue-500'
-                : 'text-gray-500'
+              ? 'text-blue-500 border-b-2 border-blue-500'
+              : 'text-gray-500'
               }`}
             onClick={() => setFilterType(type)}
           >
@@ -469,7 +606,21 @@ const ProviderList = () => {
               <th className="p-3">Provider</th>
               <th className="p-3">Rating</th>
               <th className="p-3">Contact</th>
-              <th className="p-3">Category</th>
+              <th
+                className="p-3 cursor-pointer hover:bg-blue-800"
+                onClick={() => requestSort('category')}
+              >
+                <div className="flex items-center justify-center">
+                  Category
+                  <span className="ml-1">
+                    {sortConfig.key === 'category' ? (
+                      sortConfig.direction === 'ascending' ? '↑' : '↓'
+                    ) : (
+                      '↕' // This is the neutral sort indicator (up-down arrow)
+                    )}
+                  </span>
+                </div>
+              </th>
               <th className="p-3">Views</th>
               <th className="p-3">Reports</th>
               <th className="p-3">Calls</th>
@@ -622,6 +773,7 @@ const ProviderList = () => {
         formData={formData}
         setFormData={setFormData}
         categories={categories}
+        locations={locations} // Pass locations to the modal
       />
     </div>
   );

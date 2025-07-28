@@ -7,8 +7,11 @@ import {
   deleteSubCategory,
   editSubCategory,
   toggleFeatured,
+  toggleSubCategoryStatus,
 } from "../features/subCategorySlice";
 import DownloadCsv from "../components/DownloadCsv";
+import { ToastContainer, toast } from 'react-toastify';
+
 
 const SubCategorySetup = () => {
   const dispatch = useDispatch();
@@ -92,6 +95,17 @@ const SubCategorySetup = () => {
       .catch((err) => alert(`Failed to edit: ${err.message}`)); // Show detailed error message
   };
 
+  const handleToggleStatus = async (id) => {
+      try {
+        await dispatch(toggleSubCategoryStatus(id)).unwrap();
+        toast.success('SubCategory status updated successfully');
+        dispatch(fetchSubCategories()); 
+      } catch (error) {
+        toast.error('Failed to update subcategory status');
+      }
+    };
+  
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
@@ -127,6 +141,7 @@ const SubCategorySetup = () => {
                 <th className="relative p-1 md:p-3">Name</th>
                 <th className="relative p-1 md:p-3">Parent Category</th>
                 <th className="relative p-1 md:p-3">Number of Providers</th>
+                 <th className="relative p-1 md:p-3">Status</th>
                 <th className="relative p-1 md:p-3">Is Featured</th>
                 <th className="p-2">Actions</th>
               </tr>
@@ -141,6 +156,19 @@ const SubCategorySetup = () => {
                   <td className="p-2">{category?.name || "N/A"}</td>
                   <td className="p-2">{category?.category?.title || "N/A"}</td>
                   <td className="p-2">{category?.providers_count}</td>
+                  <td className="p-2">
+                     <label className="relative inline-block">
+                    <input
+                      type="checkbox"
+                      className="peer invisible"
+                      checked={category.status === "active"} // Check based on seeker status
+                      onChange={() => handleToggleStatus(category.id)} // Handle toggle change
+                    />
+                    <span className="absolute top-0 left-0 w-9 h-5 cursor-pointer rounded-full bg-slate-200 border border-slate-300 transition-all duration-100 peer-checked:bg-sky-700"></span>
+                    <span className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full z-10 transition-all duration-100 peer-checked:translate-x-4"></span>
+                  </label>
+                  
+                  </td>
                   <td className="p-2">
                     <label className="inline-flex items-center cursor-pointer">
                       <input
@@ -220,6 +248,7 @@ const SubCategorySetup = () => {
               </button>
             </div>
           </div>
+           <ToastContainer />
         </div>
       )}
     </>
