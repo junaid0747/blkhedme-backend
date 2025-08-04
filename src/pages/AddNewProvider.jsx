@@ -12,6 +12,7 @@ import { fetchLocations } from "../features/locationSlice";
 import { FaPaperclip } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Select from "react-select";
 
 const AddNewProvider = () => {
   const dispatch = useDispatch();
@@ -57,7 +58,9 @@ const AddNewProvider = () => {
   const [selectedDegreeFileName, setSelectedDegreeFileName] = useState("");
   const [subcategories, setSubcategories] = useState([]); // For the selected category's subcategories
   const [selectedSubcategory, setSelectedSubcategory] = useState(""); // Selected subcategory
-
+  const [selectedProfessions, setSelectedProfessions] = useState([]);
+  const [selectedSubcategories, setSelectedSubcategories] = useState([]);
+  const [subcategoriesOptions, setSubcategoriesOptions] = useState([]);
 
   // Image Upload Handlers
   const handleImageUpload = (e, setImage) => {
@@ -102,6 +105,10 @@ const AddNewProvider = () => {
 
     // Create FormData object for multipart form submission
     const formData = new FormData();
+    // Append multiple values as arrays
+    selectedProfessions.forEach((p) => formData.append("profession[]", p.value));
+    selectedSubcategories.forEach((s) => formData.append("subcategory[]", s.value));
+
     formData.append("first_name", firstName);
     formData.append("last_name", lastName);
     formData.append("ar_first_name", arFirstName);
@@ -109,9 +116,9 @@ const AddNewProvider = () => {
     formData.append("phone", contactNumber);
     formData.append("username", username);
     formData.append("email", email);
-    formData.append("profession", profession);
+    // formData.append("profession", profession);
     formData.append("area_of_operation", areaOfOperation);
-    formData.append("subcategory", selectedSubcategory);
+    // formData.append("subcategory", selectedSubcategory);
     // formData.append("working_hours_from", workingHoursFrom);
     // formData.append("working_hours_till", workingHoursTill);
     // formData.append("identity_type", idType);
@@ -167,18 +174,46 @@ const AddNewProvider = () => {
       });
   };
 
-  const handleCategoryChange = (e) => {
-    const categoryId = e.target.value;
-    setProfession(categoryId);
+  // const handleCategoryChange = (e) => {
+  //   const categoryId = e.target.value;
+  //   setProfession(categoryId);
 
-    // Find the selected category from the categories array
-    const selectedCategory = categories.find(
-      (category) => category.id === parseInt(categoryId)
-    );
+  //   // Find the selected category from the categories array
+  //   const selectedCategory = categories.find(
+  //     (category) => category.id === parseInt(categoryId)
+  //   );
 
-    // Set subcategories or clear if none exist
-    setSubcategories(selectedCategory?.sub_category || []);
-    setSelectedSubcategory(""); // Reset subcategory selection
+  //   // Set subcategories or clear if none exist
+  //   setSubcategories(selectedCategory?.sub_category || []);
+  //   setSelectedSubcategory(""); // Reset subcategory selection
+  // };
+
+  const professionOptions = Array.isArray(categories)
+    ? categories.map((cat) => ({
+      value: cat.id,
+      label: cat.title,
+    }))
+    : [];
+
+  const handleProfessionChange = (selected) => {
+    setSelectedProfessions(selected || []);
+
+    const allSubs = (selected || [])
+      .map((cat) => {
+        const category = categories.find((c) => c.id === cat.value);
+        return category?.sub_category?.map((sub) => ({
+          value: sub.id,
+          label: sub.name,
+        })) || [];
+      })
+      .flat();
+
+    setSubcategoriesOptions(allSubs);
+    setSelectedSubcategories([]);
+  };
+
+  const handleSubcategoryChange = (selected) => {
+    setSelectedSubcategories(selected || []);
   };
 
 
@@ -314,7 +349,7 @@ const AddNewProvider = () => {
                   </div>
                   <div className="flex flex-col w-full">
                     <label htmlFor="arLastName" className="mb-1">
-                     AR Last Name
+                      AR Last Name
                     </label>
                     <input
                       type="text"
@@ -425,38 +460,15 @@ const AddNewProvider = () => {
                   <label htmlFor="profession" className="mb-1">
                     Profession
                   </label>
-                  <select
-                    name="profession"
-                    id="profession"
-                    className="border p-2 rounded-md w-full"
-                    value={profession}
-                    onChange={handleCategoryChange}
-                    required
-                  >
-                    <option value="" disabled>
-                      Select
-                    </option>
-                    {/* Dynamically populate dropdown with categories */}
-                    {categories && categories.length > 0 ? (
-                      categories.map((category) => (
-                        <option key={category.id} value={category.id}>
-                          {category.title}
-                        </option>
-                      ))
-                    ) : (
-                      <option disabled>Loading categories...</option>
-                    )}
-                  </select>
-                  {error?.message?.profession && (
-                    <div className="text-red-500 mt-2">
-                      <ul>
-                        {error.message.profession.map((msg, index) => (
-                          <li key={index}>{msg}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  <Select
+                    isMulti
+                    options={professionOptions}
+                    value={selectedProfessions}
+                    onChange={handleProfessionChange}
+                    classNamePrefix="select"
+                  />
                 </div>
+
                 <div className="flex flex-col w-full">
                   <label htmlFor="areaOfOperation" className="mb-1">
                     Area of Operation
@@ -495,30 +507,20 @@ const AddNewProvider = () => {
                 </div>
               </div>
               <div className="flex flex-col md:flex-row gap-4">
-             
-                  <div className="flex flex-col w-full ">
+
+                <div className="flex flex-col w-full ">
                   <label htmlFor="subcategory" className="mb-1">
-                      Subcategory
-                    </label>
-                      <select
-                        name="subcategory"
-                        id="subcategory"
-                        className="border p-2 rounded-md w-full"
-                        value={selectedSubcategory}
-                        onChange={(e) => setSelectedSubcategory(e.target.value)}
-                        required
-                      >
-                        <option value="" disabled>
-                          Select
-                        </option>
-                        {subcategories.map((subcategory) => (
-                          <option key={subcategory.id} value={subcategory.id}>
-                            {subcategory.name}
-                          </option>
-                        ))}
-                      </select>
-                  </div>
-               
+                    Subcategory
+                  </label>
+                  <Select
+                    isMulti
+                    options={subcategoriesOptions}
+                    value={selectedSubcategories}
+                    onChange={handleSubcategoryChange}
+                    classNamePrefix="select"
+                  />
+                </div>
+
                 {/* <div className="flex flex-col w-full">
                   <label htmlFor="workingHours" className="mb-1">
                     Working Hours
@@ -562,7 +564,7 @@ const AddNewProvider = () => {
           </h1>
           <div className="w-full">
             <form action="#" className="space-y-4 p-4 w-full text-sm" onSubmit={handleSubmit}>
-                {/* <div className="flex flex-col md:flex-row gap-4 mb-8">
+              {/* <div className="flex flex-col md:flex-row gap-4 mb-8">
                   <div className="flex gap-4 w-full flex-col md:flex-row">
                     <div className="flex flex-col">
                       <label htmlFor="idType" className="mb-1">

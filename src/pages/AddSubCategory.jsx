@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaBuffer, FaRegImage } from "react-icons/fa";
-import { useDispatch } from 'react-redux'; 
+import { useDispatch ,useSelector} from 'react-redux'; 
 import { addSubCategory } from '../features/subCategorySlice'; 
 import axios from 'axios';
+import {
+  fetchCategories,
+} from "../features/categorySlice";
 
 const SubCategorySetup = () => {
   const [language, setLanguage] = useState("default");
@@ -18,6 +21,7 @@ const SubCategorySetup = () => {
   const [submissionMessage, setSubmissionMessage] = useState('');
 
   const dispatch = useDispatch(); // Initialize dispatch
+const { categories, loading, error } = useSelector((state) => state.categories);
 
   const handleFileChange = (event) => {
     if (event.target.files.length > 0) {
@@ -32,24 +36,11 @@ const SubCategorySetup = () => {
       fileInputRef.current.click();
     }
   };
-  const token = localStorage.getItem('authToken');
-  const fetchData = async () => {
-    try {
-      const { data } = await axios.get('https://apiv2.blkhedme.com/api/admin/categories',{
-        headers : {
-          'Accept': 'application/json',
-          "Authorization": `Bearer ${token}`,
-        }
-      });
-      setLocations(data.category); 
-    } catch (error) {
-      console.error('There was an error fetching the data!', error);
-    }
-  };
+  
 
   useEffect(() => {
-    fetchData();
-  }, []);
+     dispatch(fetchCategories());
+   }, [dispatch]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -163,7 +154,7 @@ const SubCategorySetup = () => {
                 required
               >
                 <option value="0">Select Parent Category</option>
-                {locations.map((location, index) => (
+                {categories.map((location, index) => (
                   <option value={location.id} key={index}>{location.title}</option>
                 ))}
               </select>
